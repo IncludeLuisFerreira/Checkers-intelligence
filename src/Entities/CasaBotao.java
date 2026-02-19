@@ -5,10 +5,10 @@ import java.awt.*;
 
 public class CasaBotao extends JButton {
 
-    private int tipoPeca = 0;
+    private char tipoPeca = 0;
 
 
-    public void setTipoPeca(int tipo) {
+    public void setTipoPeca(char tipo) {
         this.tipoPeca = tipo;
         repaint();
     }
@@ -21,19 +21,19 @@ public class CasaBotao extends JButton {
 
         int margem = 10;
         // Brancas
-        if (tipoPeca == 1 || tipoPeca == 3) {
+        if (tipoPeca == '1' || tipoPeca == '3') {
             g2.setColor(Color.WHITE);
             g2.fillOval(margem, margem, getWidth() - 2 * margem, getHeight() - 2 * margem);
             g2.setColor(Color.BLACK);
             g2.drawOval(margem, margem, getWidth() - 2 * margem, getHeight() - 2 * margem);
             // Pretas
-        } else if (tipoPeca == 2 || tipoPeca == 4) {
+        } else if (tipoPeca == '2' || tipoPeca == '4') {
             g2.setColor(Color.BLACK);
             g2.fillOval(margem, margem, getWidth() - 2 * margem, getHeight() - 2 * margem);
         }
 
         // Representação de Dama (uma borda dourada)
-        if (tipoPeca > 2) {
+        if (tipoPeca > '2') {
             g2.setColor(Color.YELLOW);
             g2.setStroke(new BasicStroke(3));
             g2.drawOval(margem + 5, margem + 5, getWidth() - 2 * margem - 10, getHeight() - 2 * margem - 10);

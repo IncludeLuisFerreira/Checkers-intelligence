@@ -1,6 +1,7 @@
 package main;
 
 import Entities.CasaBotao;
+import Entities.Tabuleiro;
 import Utils.LogicTabuleiro;
 import Utils.PaintTabuleiro;
 
@@ -61,7 +62,7 @@ public final class MainInterfaceGrafica extends JFrame {
         if (linhaOrigem == -1) {
             
             // Verifica se a casa clicada contém QUALQUER peça (1, 2, 3 ou 4)
-            if (tabuleiroLogico.getMatriz()[linha][col] != 0) {
+            if (tabuleiroLogico.getMatriz()[linha][col] != '0') {
                 linhaOrigem = linha;
                 colOrigem = col;
                 tabuleiroInterface[linha][col].setBackground(Color.YELLOW); // Destaque do clique
@@ -122,7 +123,7 @@ public final class MainInterfaceGrafica extends JFrame {
     public void sincronizarInterface() {
         for (int i = 0; i < TAMANHO; i++) {
             for (int j = 0; j < TAMANHO; j++) {
-                int peca = tabuleiroLogico.getMatriz()[i][j];
+                char peca = tabuleiroLogico.getMatriz()[i][j];
                 tabuleiroInterface[i][j].setTipoPeca(peca);
             }
         }
