@@ -32,49 +32,64 @@ public class PaintTabuleiro {
 
     public void mostrarPossiveisJogadas(int linhaOrigem,int colOrigem, char type) {
 
-        if (type == '1') {
+        int offsetColum = 0;
+        int offseRow = 0;
 
-            if (linhaOrigem > 0 && colOrigem > 0 && colOrigem < 5) {
-                if (tabuleiroLogico.getMatriz()[linhaOrigem - 1][colOrigem - 1] == '0') { // Verifica se existe peca na esquerda
-                    tabuleiroInterface[linhaOrigem - 1][colOrigem-1].setBackground(new Color(128, 128, 128)); // cinza
-                }
-                if (tabuleiroLogico.getMatriz()[linhaOrigem - 1][colOrigem + 1] == '0') { // verifica se existe peca na direita
-                    tabuleiroInterface[linhaOrigem - 1][colOrigem+1].setBackground(new Color(128, 128, 128)); // cinza
-                }
+        switch (type) {
+            case '1' -> {
+                offsetColum = -1;
+                offseRow = -1;
+                break;
             }
-            else if (linhaOrigem > 0 && colOrigem == 5) {
-                if (tabuleiroLogico.getMatriz()[linhaOrigem - 1][colOrigem - 1] == '0') { // Verifica se existe peca na esquerda
-                    tabuleiroInterface[linhaOrigem - 1][colOrigem-1].setBackground(new Color(128, 128, 128)); // cinza
-                }
+            case '2' -> {
+                offsetColum = +1;
+                offseRow = +1;
+                break;
             }
-            else if (linhaOrigem > 0 && colOrigem == 0) {
-                if (tabuleiroLogico.getMatriz()[linhaOrigem - 1][colOrigem + 1] == '0') { // verifica se existe peca na direita
-                    tabuleiroInterface[linhaOrigem - 1][colOrigem+1].setBackground(new Color(128, 128, 128)); // cinza
-                }
+            default -> System.out.println(type + " Do not known that type");
+        }
+
+        if (linhaOrigem > 0 && colOrigem > 0 && colOrigem < 5) {
+
+            if (tabuleiroLogico.getMatriz()[linhaOrigem + offseRow][colOrigem - 1] == '0') { // Verifica se existe peca na esquerda
+                tabuleiroInterface[linhaOrigem + offseRow][colOrigem - 1].setBackground(new Color(128, 128, 128)); // cinza
+            }
+
+            if (tabuleiroLogico.getMatriz()[linhaOrigem + offsetColum][colOrigem + 1] == '0') { // verifica se existe peca na direita
+                tabuleiroInterface[linhaOrigem + offseRow][colOrigem + 1].setBackground(new Color(128, 128, 128)); // cinza
             }
         }
-        else {
-            // eh foda mas to com preguica
+        else if (linhaOrigem > 0 && colOrigem == 5) {
+            if (tabuleiroLogico.getMatriz()[linhaOrigem + offseRow][colOrigem] == '0')
+                tabuleiroInterface[linhaOrigem + offseRow][colOrigem - 1].setBackground(new Color(128, 128, 128)); // cinza
+        }
+        else if (linhaOrigem > 0 && colOrigem == 0) {
+            tabuleiroInterface[linhaOrigem + offseRow][colOrigem + 1].setBackground(new Color(128, 128, 128)); // cinza
         }
 
     }
 
     public void cancelarPossiveisJogadas(char type, int linha, int coluna) {
 
-        if (type == '1') {
-            if (linha > 0 && coluna > 0 && coluna < 5) {
-                colorirCasaVerde(linha-1, coluna-1);
-                colorirCasaVerde(linha-1, coluna+1);
-            }
-            else if (linha > 0 && coluna == 0) {
-                colorirCasaVerde(linha-1, coluna+1);
-            }
-            else if (linha> 0 && coluna == 5) {
-                colorirCasaVerde(linha-1, coluna-1);
-            }
-        }
-        else {
+        int offsetRow = 0;
 
+        switch (type) {
+            case '1' -> offsetRow = -1;
+            case '2' -> offsetRow = +1;
         }
+
+       if (linha > 0 && linha < 5) {
+
+           if (coluna > 0 && coluna < 5) {
+               colorirCasaVerde(linha + offsetRow, coluna - 1);
+               colorirCasaVerde(linha + offsetRow, coluna + 1);
+           }
+           else if (coluna == 0) {
+               colorirCasaVerde(linha + offsetRow, coluna + 1);
+           }
+           else if (coluna == 5) {
+               colorirCasaVerde(linha + offsetRow, coluna - 1);
+           }
+       }
     }
 }

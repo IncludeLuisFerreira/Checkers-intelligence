@@ -22,6 +22,9 @@ public class LogicTabuleiro {
         if (Math.abs(r1 - r2) > 1 || Math.abs(c1 - c2) > 1)
             return false;
 
+        if (tabuleiroLogico.getMatriz()[r2][c2] != '0')
+            return false;
+
         if (tabuleiroLogico.getMatriz()[r1][c1] == '1') {
             return r1 > r2;
         }
@@ -36,6 +39,7 @@ public class LogicTabuleiro {
 
         // A casa de destino deve estar vazia
         if (tabuleiroLogico.getMatriz()[r2][c2] == '0' && movIsValid(r1, c1, r2, c2)) {
+            System.out.println("Move valid ");
 
             // Transfere o valor (seja 1, 2, 3 ou 4) para a nova posição
             tabuleiroLogico.getMatriz()[r2][c2] = tabuleiroLogico.getMatriz()[r1][c1];
