@@ -51,23 +51,33 @@ public final class MainInterfaceGrafica extends JFrame {
 
                 final int linha = i;
                 final int coluna = j;
-                tabuleiroInterface[i][j].addActionListener(e -> tratarClique(linha, coluna));
+                tabuleiroInterface[i][j].addActionListener(_ -> tratarClique(linha, coluna));
                 add(tabuleiroInterface[i][j]);
             }
         }
     }
 
     private void tratarClique(int linha, int col) {
+        boolean turn = logic.whoseTurn();
         // Caso 1: Nenhuma peça selecionada ainda
         if (linhaOrigem == -1) {
-            
-            // Verifica se a casa clicada contém QUALQUER peça (1, 2, 3 ou 4)
-            if (tabuleiroLogico.getMatriz()[linha][col] != '0') {
+
+            // Talvez um pessimo jeito de implementar turno
+            String pieces;
+            if (turn) {
+                pieces = "13";
+            }
+            else
+                pieces = "24";
+
+
+            if (tabuleiroLogico.getMatriz()[linha][col] == pieces.charAt(0) || tabuleiroLogico.getMatriz()[linha][col] == pieces.charAt(1)) {
                 linhaOrigem = linha;
                 colOrigem = col;
                 tabuleiroInterface[linha][col].setBackground(Color.YELLOW); // Destaque do clique
                 paint.mostrarPossiveisJogadas(linha, col, tabuleiroLogico.getMatriz()[linha][col]);
-            }
+        }
+
         }
         // Caso 2: Já existe uma peça selecionada, tentando mover
         else {
@@ -87,6 +97,7 @@ public final class MainInterfaceGrafica extends JFrame {
                 paint.cancelarPossiveisJogadas(tabuleiroLogico.getMatriz()[linha][col], linhaOrigem, colOrigem);
                 cancelarSelecao();
                 sincronizarInterface();
+                logic.changeTurn();
 
                 /*
                     VERIFICAÇÃO DE QUEM É A VEZ DE JOGAR E IMPLEMENTAÇÃO DA JOGADA DA IA

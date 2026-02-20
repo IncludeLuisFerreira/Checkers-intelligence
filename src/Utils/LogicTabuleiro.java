@@ -9,6 +9,7 @@ import Entities.Tabuleiro;
 public class LogicTabuleiro {
 
     private final Tabuleiro tabuleiroLogico;
+    boolean turn = true;
 
     public LogicTabuleiro(Tabuleiro tabuleiroLogico) {
         this.tabuleiroLogico = tabuleiroLogico;
@@ -56,6 +57,15 @@ public class LogicTabuleiro {
             return true;
         }
         return false;
+    }
+
+    // True -> white; False -> black
+    public boolean whoseTurn() {
+      return turn;
+    }
+
+    public void changeTurn() {
+        turn = !turn;
     }
 
 
