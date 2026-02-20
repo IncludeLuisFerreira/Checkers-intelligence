@@ -49,7 +49,7 @@ public class PaintTabuleiro {
             default -> System.out.println(type + " Do not known that type");
         }
 
-        if (linhaOrigem > 0 && colOrigem > 0 && colOrigem < 5) {
+        if (linhaOrigem >= 0 && colOrigem > 0 && colOrigem < 5) {
 
             if (tabuleiroLogico.getMatriz()[linhaOrigem + offseRow][colOrigem - 1] == '0') { // Verifica se existe peca na esquerda
                 tabuleiroInterface[linhaOrigem + offseRow][colOrigem - 1].setBackground(new Color(128, 128, 128)); // cinza
@@ -59,12 +59,13 @@ public class PaintTabuleiro {
                 tabuleiroInterface[linhaOrigem + offseRow][colOrigem + 1].setBackground(new Color(128, 128, 128)); // cinza
             }
         }
-        else if (linhaOrigem > 0 && colOrigem == 5) {
-            if (tabuleiroLogico.getMatriz()[linhaOrigem + offseRow][colOrigem] == '0')
+        else if (linhaOrigem >= 0 && colOrigem == 5) {
+            if (tabuleiroLogico.getMatriz()[linhaOrigem + offseRow][colOrigem - 1] == '0')
                 tabuleiroInterface[linhaOrigem + offseRow][colOrigem - 1].setBackground(new Color(128, 128, 128)); // cinza
         }
-        else if (linhaOrigem > 0 && colOrigem == 0) {
-            tabuleiroInterface[linhaOrigem + offseRow][colOrigem + 1].setBackground(new Color(128, 128, 128)); // cinza
+        else if (linhaOrigem >= 0 && colOrigem == 0) {
+            if (tabuleiroLogico.getMatriz()[linhaOrigem + offseRow][colOrigem + 1] == '0')
+                tabuleiroInterface[linhaOrigem + offseRow][colOrigem + 1].setBackground(new Color(128, 128, 128)); // cinza
         }
 
     }
@@ -78,7 +79,7 @@ public class PaintTabuleiro {
             case '2' -> offsetRow = +1;
         }
 
-       if (linha > 0 && linha < 5) {
+       if (linha >= 0 && linha <= 5) {
 
            if (coluna > 0 && coluna < 5) {
                colorirCasaVerde(linha + offsetRow, coluna - 1);
