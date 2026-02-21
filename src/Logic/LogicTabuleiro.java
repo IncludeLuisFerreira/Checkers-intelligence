@@ -2,8 +2,10 @@ package Logic;
 
 import Entities.Tabuleiro;
 
+import javax.management.StringValueExp;
+
 /**
- *  Classe com o objetivo de validar os moviemntos e mover as pecas do jogo.
+ *  Classe para validar os movimentos e mover as pecas do jogo.
  *
  */
 public class LogicTabuleiro {
@@ -16,47 +18,88 @@ public class LogicTabuleiro {
     }
 
     /* =========== FUNÇÃO DE REGRA DE MOVIMENTO DE UMA PEÇA SIMPLES ===========*/
-    private boolean movIsValid(int r1, int c1, int r2, int c2) {
-        if (r1 == r2 || c1 == c2)
-            return false;
-
-        if (Math.abs(r1 - r2) > 1 || Math.abs(c1 - c2) > 1)
-            return false;
-
+    private boolean simpleMove(int r1, int c1, int r2, int c2) {
         if (tabuleiroLogico.getMatriz()[r2][c2] != '0')
             return false;
 
-        if (tabuleiroLogico.getMatriz()[r1][c1] == '1') {
-            return r1 > r2;
+        if (tabuleiroLogico.getMatriz()[r1][c1] == '1' && r1 <= r2) {
+            return false;
         }
-        else if (tabuleiroLogico.getMatriz()[r1][c1] == '2') {
-            return r2 > r1;
+        else if (tabuleiroLogico.getMatriz()[r1][c1] == '2' && r1 >= r2) {
+            return false;
         }
+
+        tabuleiroLogico.getMatriz()[r2][c2] = tabuleiroLogico.getMatriz()[r1][c1];
+        tabuleiroLogico.getMatriz()[r1][c1] = '0';
+        return true;
+    }
+
+    private boolean verifyCapture(int r1, int c1, int r2, int c2) {
+        int linhaMeio = (r1 + r2) / 2;
+        int colunaMeio = (c1 + c2) / 2;
+        char otherPiece = tabuleiroLogico.getMatriz()[linhaMeio][colunaMeio];
+        char piece = tabuleiroLogico.getMatriz()[r1][c1];
+
+        String teamPieces = ("13".contains(String.valueOf(piece)) ? "13" : "14");
+
+
+        if (!teamPieces.contains(String.valueOf(otherPiece))) {
+            tabuleiroLogico.getMatriz()[linhaMeio][colunaMeio] = '0';
+            tabuleiroLogico.getMatriz()[r2][c2] = piece;
+            tabuleiroLogico.getMatriz()[r1][c1] = '0';
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean isDama(int r1, int c1) {
+        return "14".contains(String.valueOf(tabuleiroLogico.getMatriz()[r1][c1]));
+    }
+
+    private boolean isDiagonal(int r1, int c1, int r2, int c2) {
+        return ((r1 + c1) == (r2 + c2) || (r1 - c1) == (r2 - c2));
+    }
+
+    // funcao errada, mas por enquanto funciona para teste
+    private boolean moveDama(int r1, int c1, int r2, int c2) {
+
+        if (tabuleiroLogico.getMatriz()[r2][c2] == '0')
+            return false;
+
+        tabuleiroLogico.getMatriz()[r2][c2] = tabuleiroLogico.getMatriz()[r1][c1];
+        tabuleiroLogico.getMatriz()[r1][c1] = '0';
+
+
+
         return true;
     }
 
     public boolean moverPecaLogica(int r1, int c1, int r2, int c2) {
 
+        boolean mov = false;
 
-        // A casa de destino deve estar vazia
-        if (tabuleiroLogico.getMatriz()[r2][c2] == '0' && movIsValid(r1, c1, r2, c2)) {
-            System.out.println("Move valid ");
+        // Movimento simples
+        if (Math.abs(r1 - r2) == 1 && Math.abs(c1 - c2) == 1)
+            mov =  simpleMove(r1, c1, r2, c2);
 
-            // Transfere o valor (seja 1, 2, 3 ou 4) para a nova posição
-            tabuleiroLogico.getMatriz()[r2][c2] = tabuleiroLogico.getMatriz()[r1][c1];
-            tabuleiroLogico.getMatriz()[r1][c1] = '0';
+        // Movimento de captura
+        if (Math.abs(r1 - r2) == 2 && Math.abs(c1 - c2) == 2)
+            mov = verifyCapture(r1, c1, r2, c2);
 
-            // Promoção simples para Dama (opcional)
+        if (isDama(r1, c1) && isDiagonal(r1, c2, r2, c2))
+            mov =  moveDama(r1, c1, r2, c2);
+
+        if (mov) {
             if (tabuleiroLogico.getMatriz()[r2][c2] == '2' && r2 == 5) {
                 tabuleiroLogico.getMatriz()[r2][c2] = '4';
             }
             if (tabuleiroLogico.getMatriz()[r2][c2] == '1' && r2 == 0) {
                 tabuleiroLogico.getMatriz()[r2][c2] = '3';
             }
-
-            return true;
         }
-        return false;
+
+        return mov;
     }
 
 
@@ -68,6 +111,13 @@ public class LogicTabuleiro {
     public void changeTurn() {
         turn = !turn;
     }
+
+    public boolean isEmpty(int linha, int coluna) {
+        return tabuleiroLogico.getMatriz()[linha][coluna] == '0';
+    }
+
+
+    /*======================= TESTING FUNCTIONS =======================*/
 
 
 }
