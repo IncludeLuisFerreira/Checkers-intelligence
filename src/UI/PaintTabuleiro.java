@@ -30,44 +30,19 @@ public class PaintTabuleiro {
         tabuleiroInterface[i][j].setBackground(new Color(119, 149, 86));  // Verde
     }
 
+    // So funciona para pecas simples
     public void mostrarPossiveisJogadas(int linhaOrigem,int colOrigem, char type) {
+        int direcao = (type == '1' ? -1 : (type == '2' ? 1 : 0));
 
-        int offsetColum = 0;
-        int offseRow = 0;
+        if (direcao == 0) return;
 
-        switch (type) {
-            case '1' -> {
-                offsetColum = -1;
-                offseRow = -1;
-                break;
-            }
-            case '2' -> {
-                offsetColum = +1;
-                offseRow = +1;
-                break;
-            }
-            default -> System.out.println(type + " Do not known that type");
+        if (isEmpty(linhaOrigem + direcao, colOrigem - 1)) {
+            setBgGray(linhaOrigem + direcao, colOrigem - 1);
         }
 
-        if (linhaOrigem >= 0 && colOrigem > 0 && colOrigem < 5) {
-
-            if (tabuleiroLogico.getMatriz()[linhaOrigem + offseRow][colOrigem - 1] == '0') { // Verifica se existe peca na esquerda
-                tabuleiroInterface[linhaOrigem + offseRow][colOrigem - 1].setBackground(new Color(128, 128, 128)); // cinza
-            }
-
-            if (tabuleiroLogico.getMatriz()[linhaOrigem + offsetColum][colOrigem + 1] == '0') { // verifica se existe peca na direita
-                tabuleiroInterface[linhaOrigem + offseRow][colOrigem + 1].setBackground(new Color(128, 128, 128)); // cinza
-            }
+        if (isEmpty(linhaOrigem + direcao, colOrigem + 1)) {
+            setBgGray(linhaOrigem + direcao, colOrigem + 1);
         }
-        else if (linhaOrigem >= 0 && colOrigem == 5) {
-            if (tabuleiroLogico.getMatriz()[linhaOrigem + offseRow][colOrigem - 1] == '0')
-                tabuleiroInterface[linhaOrigem + offseRow][colOrigem - 1].setBackground(new Color(128, 128, 128)); // cinza
-        }
-        else if (linhaOrigem >= 0 && colOrigem == 0) {
-            if (tabuleiroLogico.getMatriz()[linhaOrigem + offseRow][colOrigem + 1] == '0')
-                tabuleiroInterface[linhaOrigem + offseRow][colOrigem + 1].setBackground(new Color(128, 128, 128)); // cinza
-        }
-
     }
 
     public void cancelarPossiveisJogadas(char type, int linha, int coluna) {
@@ -76,7 +51,7 @@ public class PaintTabuleiro {
 
         switch (type) {
             case '1' -> offsetRow = -1;
-            case '2' -> offsetRow = +1;
+            case '2' -> offsetRow = 1;
         }
 
        if (linha >= 0 && linha <= 5) {
@@ -93,4 +68,21 @@ public class PaintTabuleiro {
            }
        }
     }
+
+
+    /*======================= TESTING FUNCTIONS =======================*/
+    private boolean isNotParamValid(int r, int c) {
+        return r < 0 || r > 5 || c < 0 || c > 5;
+    }
+
+    private boolean isEmpty(int r, int c) {
+        if (isNotParamValid(r, c)) return false;
+        return tabuleiroLogico.getMatriz()[r][c] == '0';
+    }
+
+    private void setBgGray(int r, int c) {
+        if (isNotParamValid(r, c)) return;
+        tabuleiroInterface[r][c].setBackground(new Color(128, 128, 128));
+    }
+
 }
