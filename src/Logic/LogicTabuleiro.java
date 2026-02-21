@@ -1,4 +1,4 @@
-package Utils;
+package Logic;
 
 import Entities.Tabuleiro;
 
@@ -58,6 +58,7 @@ public class LogicTabuleiro {
         }
         return false;
     }
+
 
     // True -> white; False -> black
     public boolean whoseTurn() {

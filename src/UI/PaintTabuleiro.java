@@ -1,4 +1,4 @@
-package Utils;
+package UI;
 
 import Entities.CasaBotao;
 import Entities.Tabuleiro;

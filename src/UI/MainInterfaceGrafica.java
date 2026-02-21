@@ -1,9 +1,8 @@
-package main;
+package UI;
 
 import Entities.CasaBotao;
 import Entities.Tabuleiro;
-import Utils.LogicTabuleiro;
-import Utils.PaintTabuleiro;
+import Logic.LogicTabuleiro;
 
 import javax.swing.*;
 import java.awt.*;
@@ -121,10 +120,6 @@ public final class MainInterfaceGrafica extends JFrame {
         }
         linhaOrigem = -1;
         colOrigem = -1;
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(MainInterfaceGrafica::new);
     }
     
     /*
