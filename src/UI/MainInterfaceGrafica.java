@@ -74,7 +74,7 @@ public final class MainInterfaceGrafica extends JFrame {
                 linhaOrigem = linha;
                 colOrigem = col;
                 tabuleiroInterface[linha][col].setBackground(Color.YELLOW); // Destaque do clique
-                paint.mostrarPossiveisJogadas(linha, col, tabuleiroLogico.getMatriz()[linha][col]);
+                paint.mostrarPossiveisJogadas(linha, col);
         }
 
         }
@@ -89,11 +89,12 @@ public final class MainInterfaceGrafica extends JFrame {
             }
 
 
+            char antigoType = tabuleiroLogico.getMatriz()[linhaOrigem][colOrigem];
             boolean sucesso = logic.moverPecaLogica(linhaOrigem, colOrigem, linha, col);
 
 
             if (sucesso) {
-                paint.cancelarPossiveisJogadas(tabuleiroLogico.getMatriz()[linha][col], linhaOrigem, colOrigem);
+                paint.cancelarPossiveisJogadas(antigoType, linhaOrigem, colOrigem);
                 cancelarSelecao();
                 sincronizarInterface();
                 logic.changeTurn();

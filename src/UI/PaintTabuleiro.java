@@ -31,44 +31,29 @@ public class PaintTabuleiro {
     }
 
     // So funciona para pecas simples
-    public void mostrarPossiveisJogadas(int linhaOrigem,int colOrigem, char type) {
-        int direcao = (type == '1' ? -1 : (type == '2' ? 1 : 0));
+    public void mostrarPossiveisJogadas(int linhaOrigem,int colOrigem) {
+        char type = tabuleiroLogico.getMatriz()[linhaOrigem][colOrigem];
 
-        if (direcao == 0) return;
-
-        if (isEmpty(linhaOrigem + direcao, colOrigem - 1)) {
-            setBgGray(linhaOrigem + direcao, colOrigem - 1);
+        if ("12".contains(String.valueOf(type))) {
+            int direcao = (type == '1' ? -1 : (type == '2' ? 1 : 0));
+            mostrarJogadasSimples(linhaOrigem, colOrigem, direcao);
         }
-
-        if (isEmpty(linhaOrigem + direcao, colOrigem + 1)) {
-            setBgGray(linhaOrigem + direcao, colOrigem + 1);
-        }
+        else if ("34".contains(String.valueOf(type)))
+            mostrarJogadaDama(linhaOrigem, colOrigem);
     }
 
     public void cancelarPossiveisJogadas(char type, int linha, int coluna) {
 
-        int offsetRow = 0;
-
-        switch (type) {
-            case '1' -> offsetRow = -1;
-            case '2' -> offsetRow = 1;
+        int direcao = (type == '1' ? -1 : type == '2' ? 1 : 0);
+        
+        
+        if ("12".contains(String.valueOf(type))) {
+            cancelarJogadasSimples(linha, coluna, direcao);
         }
-
-       if (linha >= 0 && linha <= 5) {
-
-           if (coluna > 0 && coluna < 5) {
-               colorirCasaVerde(linha + offsetRow, coluna - 1);
-               colorirCasaVerde(linha + offsetRow, coluna + 1);
-           }
-           else if (coluna == 0) {
-               colorirCasaVerde(linha + offsetRow, coluna + 1);
-           }
-           else if (coluna == 5) {
-               colorirCasaVerde(linha + offsetRow, coluna - 1);
-           }
-       }
+        else if ("34".contains(String.valueOf(type))) {
+            cancelarJogadasDama(linha, coluna);
+        }
     }
-
 
     /*======================= TESTING FUNCTIONS =======================*/
     private boolean isNotParamValid(int r, int c) {
@@ -83,6 +68,52 @@ public class PaintTabuleiro {
     private void setBgGray(int r, int c) {
         if (isNotParamValid(r, c)) return;
         tabuleiroInterface[r][c].setBackground(new Color(128, 128, 128));
+    }
+
+    private void mostrarJogadasSimples(int linhaOrigem, int colOrigem, int direcao) {
+
+        if (direcao == 0) return;
+
+        if (isEmpty(linhaOrigem + direcao, colOrigem - 1)) {
+            setBgGray(linhaOrigem + direcao, colOrigem - 1);
+        }
+
+        if (isEmpty(linhaOrigem + direcao, colOrigem + 1)) {
+            setBgGray(linhaOrigem + direcao, colOrigem + 1);
+        }
+    }
+
+    private void cancelarJogadasSimples(int linhaOrigem, int colOrigem, int direcao) {
+
+        if (!isNotParamValid(linhaOrigem + direcao, colOrigem - 1))
+            colorirCasaVerde(linhaOrigem + direcao, colOrigem - 1);
+        if (!isNotParamValid(linhaOrigem + direcao, colOrigem + 1))
+            colorirCasaVerde(linhaOrigem + direcao, colOrigem + 1);
+    }
+
+    private void mostrarJogadaDama(int linhaOrigem, int colOrigem) {
+
+        // A minha certeza eh de estar fazendo errado, mas fazendo.
+
+
+        for (int i = 0; i < tabuleiroLogico.getTam() - colOrigem - 1; i++) {
+            setBgGray(linhaOrigem + 1 + i, colOrigem + 1 + i);
+        }
+
+        for (int i = 0; i < colOrigem; i++) {
+            setBgGray(linhaOrigem + i + 1, colOrigem - 1 - i);
+        }
+    }
+
+    private void cancelarJogadasDama(int linhaOrigem, int colOrigem) {
+
+        for (int i = 0; i < tabuleiroLogico.getTam() - colOrigem - 1; i++) {
+           colorirCasaVerde(linhaOrigem + 1 + i, colOrigem + 1 + i);
+        }
+
+        for (int i = 0; i < colOrigem; i++) {
+            colorirCasaVerde(linhaOrigem + i + 1, colOrigem - 1 - i);
+        }
     }
 
 }
