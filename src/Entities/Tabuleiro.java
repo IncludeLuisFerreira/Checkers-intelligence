@@ -48,6 +48,10 @@ public class Tabuleiro implements Cloneable {
         }
     }
 
+    public int getTam() {
+        return TAMANHO;
+    }
+
     @Override
     public Tabuleiro clone() {
         try {
