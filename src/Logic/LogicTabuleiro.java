@@ -40,7 +40,7 @@ public class LogicTabuleiro {
         char otherPiece = tabuleiroLogico.getMatriz()[linhaMeio][colunaMeio];
         char piece = tabuleiroLogico.getMatriz()[r1][c1];
 
-        String teamPieces = ("13".contains(String.valueOf(piece)) ? "13" : "14");
+        String teamPieces = ("13".contains(String.valueOf(piece)) ? "13" : "24");
 
 
         if (!teamPieces.contains(String.valueOf(otherPiece))) {
