@@ -2,7 +2,6 @@ package Logic;
 
 import Entities.Tabuleiro;
 
-import javax.management.StringValueExp;
 
 /**
  *  Classe para validar os movimentos e mover as pecas do jogo.
@@ -112,12 +111,38 @@ public class LogicTabuleiro {
         turn = !turn;
     }
 
-    public boolean isEmpty(int linha, int coluna) {
-        return tabuleiroLogico.getMatriz()[linha][coluna] == '0';
-    }
-
 
     /*======================= TESTING FUNCTIONS =======================*/
 
+    public boolean isEmpty(int r, int c) {
+        if (isNotParamValid(r, c)) return false;
+        return tabuleiroLogico.getMatriz()[r][c] == '0';
+    }
+
+    public boolean isNotParamValid(int r, int c) {
+        return r < 0 || r > 5 || c < 0 || c > 5;
+    }
+
+   public char getType(int r, int c) {
+        if (isNotParamValid(r, c)) return '#';  // Tipo nao reconhecido
+        return tabuleiroLogico.getMatriz()[r][c];
+   }
+
+   public int getTam() {
+        return tabuleiroLogico.getTam();
+   }
+
+   public boolean isEnemy(int r1, int c1, int r2, int c2) {
+        char type1 = getType(r1, c1);
+        char type2 = getType(r2, c2);
+
+        if (type2 == type1)
+            return false;
+
+        if ("13".contains(String.valueOf(type1)) && "13".contains(String.valueOf(type2)))
+            return false;
+
+       return !"24".contains(String.valueOf(type1)) || !"24".contains(String.valueOf(type2));
+   }
 
 }

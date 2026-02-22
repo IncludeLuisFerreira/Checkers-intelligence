@@ -28,7 +28,7 @@ public final class MainInterfaceGrafica extends JFrame {
         */
         tabuleiroLogico = new Tabuleiro();
         logic = new LogicTabuleiro(tabuleiroLogico);
-        paint = new PaintTabuleiro(tabuleiroLogico, tabuleiroInterface);
+        paint = new PaintTabuleiro(logic, tabuleiroInterface);
 
         setTitle("DISCIPLINA - IA - MINI JOGO DE DAMA");
         setSize(800, 800);
