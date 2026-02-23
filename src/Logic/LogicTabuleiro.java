@@ -18,7 +18,7 @@ public class LogicTabuleiro {
 
     /* =========== FUNÇÃO DE REGRA DE MOVIMENTO DE UMA PEÇA SIMPLES ===========*/
     private boolean simpleMove(int r1, int c1, int r2, int c2) {
-        if (tabuleiroLogico.getMatriz()[r2][c2] != '0')
+        if (!isEmpty(r2, c2))
             return false;
 
         if (tabuleiroLogico.getMatriz()[r1][c1] == '1' && r1 <= r2) {
@@ -36,13 +36,10 @@ public class LogicTabuleiro {
     private boolean verifyCapture(int r1, int c1, int r2, int c2) {
         int linhaMeio = (r1 + r2) / 2;
         int colunaMeio = (c1 + c2) / 2;
-        char otherPiece = tabuleiroLogico.getMatriz()[linhaMeio][colunaMeio];
         char piece = tabuleiroLogico.getMatriz()[r1][c1];
 
-        String teamPieces = ("13".contains(String.valueOf(piece)) ? "13" : "24");
 
-
-        if (!teamPieces.contains(String.valueOf(otherPiece))) {
+        if (!isEmpty(linhaMeio, colunaMeio) && isEmpty(r2, c2) && isEnemy(r1, c1, linhaMeio, colunaMeio)) {
             tabuleiroLogico.getMatriz()[linhaMeio][colunaMeio] = '0';
             tabuleiroLogico.getMatriz()[r2][c2] = piece;
             tabuleiroLogico.getMatriz()[r1][c1] = '0';
@@ -53,7 +50,7 @@ public class LogicTabuleiro {
     }
 
     private boolean isDama(int r1, int c1) {
-        return "14".contains(String.valueOf(tabuleiroLogico.getMatriz()[r1][c1]));
+        return "34".contains(String.valueOf(tabuleiroLogico.getMatriz()[r1][c1]));
     }
 
     private boolean isDiagonal(int r1, int c1, int r2, int c2) {
@@ -63,13 +60,18 @@ public class LogicTabuleiro {
     // funcao errada, mas por enquanto funciona para teste
     private boolean moveDama(int r1, int c1, int r2, int c2) {
 
-        if (tabuleiroLogico.getMatriz()[r2][c2] == '0')
+        if (!isEmpty(r2, c2))
             return false;
+
+        int direcao = (c1 - c2 < 0 ? -1 : 1);
+
+        if (!isEmpty(r2 + direcao, c2 + direcao) && isEnemy(r1, c1, r2 + direcao, c2 + direcao)) {
+            tabuleiroLogico.getMatriz()[r2+direcao][c2+direcao] = '0';
+        }
+
 
         tabuleiroLogico.getMatriz()[r2][c2] = tabuleiroLogico.getMatriz()[r1][c1];
         tabuleiroLogico.getMatriz()[r1][c1] = '0';
-
-
 
         return true;
     }
@@ -86,7 +88,7 @@ public class LogicTabuleiro {
         if (Math.abs(r1 - r2) == 2 && Math.abs(c1 - c2) == 2)
             mov = verifyCapture(r1, c1, r2, c2);
 
-        if (isDama(r1, c1) && isDiagonal(r1, c2, r2, c2))
+        if (isDama(r1, c1) && isDiagonal(r1, c1, r2, c2))
             mov =  moveDama(r1, c1, r2, c2);
 
         if (mov) {
