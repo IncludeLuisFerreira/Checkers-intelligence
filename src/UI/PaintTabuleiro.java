@@ -59,8 +59,6 @@ public class PaintTabuleiro {
     /*======================= TESTING FUNCTIONS =======================*/
 
 
-
-
     private void setBgGray(int r, int c) {
         if (logic.isNotParamValid(r, c)) return;
         tabuleiroInterface[r][c].setBackground(new Color(128, 128, 128));
@@ -68,7 +66,7 @@ public class PaintTabuleiro {
 
     private void setBgRed(int r, int c) {
         if (logic.isNotParamValid(r, c)) return ;
-        tabuleiroInterface[r][c].setBackground(new Color(255, 128, 128));
+        tabuleiroInterface[r][c].setBackground(new Color(70, 255, 61));
     }
 
     private void mostrarJogadasSimples(int linhaOrigem, int colOrigem, int direcao) {
@@ -87,7 +85,7 @@ public class PaintTabuleiro {
         if (logic.isEmpty(linhaOrigem + direcao, colOrigem + 1)) {
             setBgGray(linhaOrigem + direcao, colOrigem + 1);
         }
-        else if (logic.isEmpty(linhaOrigem + (2 * direcao), colOrigem + 2)) {
+        else if (logic.isEmpty(linhaOrigem + (2 * direcao), colOrigem + 2) && logic.isEnemy(linhaOrigem, colOrigem, linhaOrigem + direcao, colOrigem + 1)) {
             setBgGray(linhaOrigem + (2 * direcao), colOrigem + 2);
             setBgRed(linhaOrigem + direcao, colOrigem + 1);
         }
