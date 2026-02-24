@@ -35,6 +35,7 @@ Artificial Intelligence implementation for Checkers (Draughts) on a reduced 6x6 
 - **Move Visualization**: Possible moves shown in gray; capturable enemy pieces shown in red
 - **Turn System**: Alternating turns between White (pieces 1, 3) and Black (pieces 2, 4)
 - **Piece Promotion**: Regular pieces promote to King when reaching the opposite end of the board
+- **Mandatory capture**: Is not possible to move other piece if you can capture enemy's pieces
 
 ### Piece Movements
 - **Simple Pieces**: Diagonal forward movement (1 square) and forward-only capture

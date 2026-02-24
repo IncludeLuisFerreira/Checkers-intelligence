@@ -4,8 +4,20 @@ import Entities.Tabuleiro;
 
 
 /**
- *  Classe para validar os movimentos e mover as pecas do jogo.
+ * @author includeluisferreira
+ * <p>
  *
+ * Classe LogicTabuleiro procura abstrair a lógica de movimentos
+ * e captura do jogo de Damas. Ela opera sobre um objeto <b>Tabuleiro</b>
+ * que representa o estado da matriz de char.
+ * <p>
+ *
+ * Principais funções:
+ * <p>
+ * - Validar e executar movimentos simples e capturas.
+ * - Controlar o movimento das damas.
+ * - Promoção de peças ao atingir a última linha.
+ * - Verificar e identificar situações de captura obrigatória durante o turno.
  */
 public class LogicTabuleiro {
 
@@ -33,6 +45,7 @@ public class LogicTabuleiro {
         return true;
     }
 
+    /*======================= VERIFICA CAPTURA =======================*/
     private boolean verifyCapture(int r1, int c1, int r2, int c2) {
         int linhaMeio = (r1 + r2) / 2;
         int colunaMeio = (c1 + c2) / 2;
@@ -49,6 +62,7 @@ public class LogicTabuleiro {
         return false;
     }
 
+    /*======================= FUNÇÕES DE UTILIDADE DA DAMA =======================*/
     private boolean isDama(int r1, int c1) {
         return "34".contains(String.valueOf(tabuleiroLogico.getMatriz()[r1][c1]));
     }
@@ -57,7 +71,8 @@ public class LogicTabuleiro {
         return ((r1 + c1) == (r2 + c2) || (r1 - c1) == (r2 - c2));
     }
 
-    // funcao errada, mas por enquanto funciona para teste
+
+    /*======================= MOVIMENTOS DA DAMA =======================*/
     private boolean moveDama(int r1, int c1, int r2, int c2) {
 
         if (!isEmpty(r2, c2))
@@ -76,6 +91,7 @@ public class LogicTabuleiro {
         return true;
     }
 
+    /*======================= FUNÇÃO GERAL DE MOVIMENTO DE PEÇAS =======================*/
     public boolean moverPecaLogica(int r1, int c1, int r2, int c2) {
 
         boolean mov = false;
@@ -103,7 +119,7 @@ public class LogicTabuleiro {
         return mov;
     }
 
-
+    /*======================= LÓGICA DE TURNO =======================*/
     // True -> white; False -> black
     public boolean whoseTurn() {
       return turn;
@@ -114,16 +130,18 @@ public class LogicTabuleiro {
     }
 
 
-
+    /*======================= FUNÇÃO PARA TESTAR SE A CASA É VAZIA =======================*/
     public boolean isEmpty(int r, int c) {
         if (isNotParamValid(r, c)) return false;
         return tabuleiroLogico.getMatriz()[r][c] == '0';
     }
 
+    /*======================= FUNÇÃO DE UTILIDADE PARA EVITAR PARÂMETROS FORA DO LIMITE =======================*/
     public boolean isNotParamValid(int r, int c) {
         return r < 0 || r > 5 || c < 0 || c > 5;
     }
 
+    /*======================= PEGAR O TIPO DA PEÇA EM UMA COORDENADA =======================*/
    public char getType(int r, int c) {
         if (isNotParamValid(r, c)) return '#';  // Tipo nao reconhecido
         return tabuleiroLogico.getMatriz()[r][c];
@@ -133,6 +151,8 @@ public class LogicTabuleiro {
         return tabuleiroLogico.getTam();
    }
 
+    /*======================= VERIFICA SE É INIMIGO =======================*/
+    /// Verifica se a peça na coordenada (r1, c1) é inimiga da peça na coordenada (r2, c2)
    public boolean isEnemy(int r1, int c1, int r2, int c2) {
         char type1 = getType(r1, c1);
         char type2 = getType(r2, c2);

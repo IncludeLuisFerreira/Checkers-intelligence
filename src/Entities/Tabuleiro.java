@@ -51,6 +51,8 @@ public class Tabuleiro implements Cloneable {
         }
     }
 
+    /*======================= GETTERS AND SETTERS =======================*/
+
     public int getTam() {
         return TAMANHO;
     }

@@ -2,10 +2,26 @@ package UI;
 
 import Entities.CasaBotao;
 import Logic.LogicTabuleiro;
-
-
 import java.awt.*;
 
+/**
+ * @author includeluisferreira
+ * <p>
+ * Classe PaintTabuleiro é responsável pela parte visual do tabuleiro,
+ * manipulando cores e destaques das casas com base no estado lógico
+ * fornecido por <b>LogicTabuleiro</b>.
+ * <p>
+ * Principais funções:
+ * <p>
+ * - Definir a coloração padrão das casas do tabuleiro.
+ * - Destacar visualmente movimentos possíveis e capturas.
+ * - Diferenciar casas de destino e peças que podem ser capturadas.
+ * - Restaurar a coloração original após cancelar destaques.
+ * <p>
+ * //TODO
+ *  Implementar IntPair e passar toda a lógica de jogadas possiveis,
+ *  retornar List<Intpair> para essa classe e assim colorir
+ */
 public class PaintTabuleiro {
 
     private final LogicTabuleiro logic;
