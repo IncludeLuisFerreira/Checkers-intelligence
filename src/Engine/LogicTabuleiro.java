@@ -78,10 +78,11 @@ public class LogicTabuleiro {
         if (!isEmpty(r2, c2))
             return false;
 
-        int direcao = (c1 - c2 < 0 ? -1 : 1);
+        int direcaoCol = (c1 - c2 < 0 ? -1 : 1);
+        int direcaoRow = (r1 - r2 < 0 ? -1 : 1);
 
-        if (!isEmpty(r2 + direcao, c2 + direcao) && isEnemy(r1, c1, r2 + direcao, c2 + direcao)) {
-            tabuleiroLogico.getMatriz()[r2+direcao][c2+direcao] = '0';
+        if (!isEmpty(r2 + direcaoRow, c2 + direcaoCol) && isEnemy(r1, c1, r2 + direcaoRow, c2 + direcaoCol)) {
+            tabuleiroLogico.getMatriz()[r2+direcaoRow][c2+direcaoCol] = '0';
         }
 
         tabuleiroLogico.setCanEat(r1, c1, false);
