@@ -38,11 +38,11 @@ public class LogicTabuleiro {
         int colunaMeio = (c1 + c2) / 2;
         char piece = tabuleiroLogico.getMatriz()[r1][c1];
 
-
         if (!isEmpty(linhaMeio, colunaMeio) && isEmpty(r2, c2) && isEnemy(r1, c1, linhaMeio, colunaMeio)) {
             tabuleiroLogico.getMatriz()[linhaMeio][colunaMeio] = '0';
             tabuleiroLogico.getMatriz()[r2][c2] = piece;
             tabuleiroLogico.getMatriz()[r1][c1] = '0';
+            tabuleiroLogico.setCanEat(r1, c1, false);
             return true;
         }
 
@@ -69,7 +69,7 @@ public class LogicTabuleiro {
             tabuleiroLogico.getMatriz()[r2+direcao][c2+direcao] = '0';
         }
 
-
+        tabuleiroLogico.setCanEat(r1, c1, false);
         tabuleiroLogico.getMatriz()[r2][c2] = tabuleiroLogico.getMatriz()[r1][c1];
         tabuleiroLogico.getMatriz()[r1][c1] = '0';
 
@@ -114,7 +114,6 @@ public class LogicTabuleiro {
     }
 
 
-    /*======================= TESTING FUNCTIONS =======================*/
 
     public boolean isEmpty(int r, int c) {
         if (isNotParamValid(r, c)) return false;
@@ -147,4 +146,78 @@ public class LogicTabuleiro {
        return !"24".contains(String.valueOf(type1)) || !"24".contains(String.valueOf(type2));
    }
 
+    /*======================= TESTING FUNCTIONS =======================*/
+
+    public boolean pieceCanEat(int r, int c) {
+        return tabuleiroLogico.getCanEat(r, c);
+    }
+
+    public boolean anyoneCanEat(boolean turn) {
+        return anyKingCanEat(turn) || anySimplePieceCanEat(turn);
+    }
+
+    private boolean anyKingCanEat(boolean turn) {
+        boolean canEat = false;
+        char type = (turn ? '3' : '4');
+
+        for (int i = 0; i < getTam(); i++) {
+            for (int j = 0; j < getTam(); j++) {
+
+                if (!isDama(i, j) || getType(i, j) != type) continue;
+
+                for (int k = 0; k < getTam() - j - 1; k++) {
+
+                    if (!isEmpty(i + 1 + k, j + 1 + k) && isEmpty(i + 2 + k, j + 2 + k)) {
+                        canEat = true;
+                        tabuleiroLogico.setCanEat(i, j, canEat);
+                        continue;
+                    }
+
+                    if (!isEmpty(i - 1 - k, j + 1 + k) && isEmpty(i - 2 - k, j + 2 + k)) {
+                        canEat = true;
+                        tabuleiroLogico.setCanEat(i, j, canEat);
+                    }
+                }
+
+                for (int k = 0; k < j; k++) {
+
+                    if (!isEmpty(i - 1 - k, j - 1 - k) && isEmpty(i - 2 - k, j - 2 - k)) {
+                        canEat = true;
+                        tabuleiroLogico.setCanEat(i, j, canEat);
+                    }
+                }
+            }
+        }
+        return canEat;
+    }
+
+
+    private boolean anySimplePieceCanEat(boolean turn) {
+
+        int direcao;
+        boolean canEat = false;
+        char type = (turn ? '1' : '2');
+
+        for (int i = 0; i < getTam(); i++) {
+            for (int j = 0; j < getTam(); j++) {
+
+                if (isEmpty(i, j) || getType(i, j) != type) continue;
+
+                if (getType(i, j) == '1') direcao = -1;
+                else direcao = 1;
+
+                if (!isEmpty(i + direcao, j + direcao) && isEmpty(i + 2 * direcao, j + 2 * direcao) && isEnemy(i, j, i + direcao, j + direcao)) {
+                    tabuleiroLogico.setCanEat(i, j, true);
+                    canEat = true;
+                }
+
+                if (!isEmpty(i + direcao, j - direcao) && isEmpty(i + 2 * direcao, j - 2 * direcao) && isEnemy(i, j, i + direcao, j - direcao)) {
+                    tabuleiroLogico.setCanEat(i, j, true);
+                    canEat = true;
+                }
+
+            }
+        }
+        return canEat;
+    }
 }

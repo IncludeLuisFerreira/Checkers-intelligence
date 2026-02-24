@@ -70,11 +70,20 @@ public final class MainInterfaceGrafica extends JFrame {
                 pieces = "24";
 
 
-            if (tabuleiroLogico.getMatriz()[linha][col] == pieces.charAt(0) || tabuleiroLogico.getMatriz()[linha][col] == pieces.charAt(1)) {
+            if (pieces.contains(String.valueOf(logic.getType(linha, col)))) {
+                    boolean onlyCanEat = false;
+                if (logic.anyoneCanEat(turn)) {
+                    onlyCanEat = true;
+                    if (!logic.pieceCanEat(linha, col)) {
+
+                        return;
+                    }
+                }
+
                 linhaOrigem = linha;
                 colOrigem = col;
                 tabuleiroInterface[linha][col].setBackground(Color.YELLOW); // Destaque do clique
-                paint.mostrarPossiveisJogadas(linha, col);
+                paint.mostrarPossiveisJogadas(linha, col, onlyCanEat);
         }
 
         }

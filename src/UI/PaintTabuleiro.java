@@ -32,15 +32,15 @@ public class PaintTabuleiro {
     }
 
     // So funciona para pecas simples
-    public void mostrarPossiveisJogadas(int linhaOrigem,int colOrigem) {
+    public void mostrarPossiveisJogadas(int linhaOrigem,int colOrigem, boolean onlyCanEat) {
         char type = logic.getType(linhaOrigem, colOrigem);
 
         if ("12".contains(String.valueOf(type))) {
             int direcao = (type == '1' ? -1 : (type == '2' ? 1 : 0));
-            mostrarJogadasSimples(linhaOrigem, colOrigem, direcao);
+            mostrarJogadasSimples(linhaOrigem, colOrigem, direcao, onlyCanEat);
         }
         else if ("34".contains(String.valueOf(type)))
-            mostrarJogadaDama(linhaOrigem, colOrigem);
+            mostrarJogadaDama(linhaOrigem, colOrigem, onlyCanEat);
     }
 
     public void cancelarPossiveisJogadas(char type, int linha, int coluna) {
@@ -69,11 +69,11 @@ public class PaintTabuleiro {
         tabuleiroInterface[r][c].setBackground(new Color(70, 255, 61));
     }
 
-    private void mostrarJogadasSimples(int linhaOrigem, int colOrigem, int direcao) {
+    private void mostrarJogadasSimples(int linhaOrigem, int colOrigem, int direcao, boolean onlyCanEat) {
 
         if (direcao == 0) return;
 
-        if (logic.isEmpty(linhaOrigem + direcao, colOrigem - 1)) {
+        if (logic.isEmpty(linhaOrigem + direcao, colOrigem - 1) && !onlyCanEat) {
             setBgGray(linhaOrigem + direcao, colOrigem - 1);
         }
         else if (logic.isEmpty(linhaOrigem + (2 * direcao), colOrigem - 2) && logic.isEnemy(linhaOrigem, colOrigem, linhaOrigem + direcao, colOrigem - 1)) {
@@ -82,7 +82,7 @@ public class PaintTabuleiro {
             setBgRed(linhaOrigem + direcao, colOrigem - 1);
         }
 
-        if (logic.isEmpty(linhaOrigem + direcao, colOrigem + 1)) {
+        if (logic.isEmpty(linhaOrigem + direcao, colOrigem + 1) && !onlyCanEat) {
             setBgGray(linhaOrigem + direcao, colOrigem + 1);
         }
         else if (logic.isEmpty(linhaOrigem + (2 * direcao), colOrigem + 2) && logic.isEnemy(linhaOrigem, colOrigem, linhaOrigem + direcao, colOrigem + 1)) {
@@ -98,7 +98,7 @@ public class PaintTabuleiro {
             colorirCasaVerde(linhaOrigem + (2*direcao), colOrigem + 2);
     }
 
-    private void mostrarJogadaDama(int linhaOrigem, int colOrigem) {
+    private void mostrarJogadaDama(int linhaOrigem, int colOrigem, boolean onlyCanEat) {
 
         for (int i = 0; i < logic.getTam() - colOrigem - 1; i++) {
             if (!logic.isEmpty(linhaOrigem + 1 + i, colOrigem + 1 + i)) {
@@ -111,7 +111,8 @@ public class PaintTabuleiro {
                 break;
             }
 
-            setBgGray(linhaOrigem + 1 + i, colOrigem + 1 + i);
+            if (!onlyCanEat)
+                setBgGray(linhaOrigem + 1 + i, colOrigem + 1 + i);
         }
 
         for (int i = 0; i < logic.getTam() - colOrigem - 1; i++) {
@@ -125,7 +126,8 @@ public class PaintTabuleiro {
                 break;
             }
 
-            setBgGray(linhaOrigem - 1 - i, colOrigem + 1 + i);
+            if (!onlyCanEat)
+                setBgGray(linhaOrigem - 1 - i, colOrigem + 1 + i);
         }
 
         for (int i = 0; i < colOrigem; i++) {
@@ -138,7 +140,8 @@ public class PaintTabuleiro {
                 break;
             }
 
-            setBgGray(linhaOrigem + i + 1, colOrigem - 1 - i);
+            if (!onlyCanEat)
+                setBgGray(linhaOrigem + i + 1, colOrigem - 1 - i);
         }
 
         for (int i = 0; i < linhaOrigem; i++) {
@@ -151,7 +154,8 @@ public class PaintTabuleiro {
                 break;
             }
 
-            setBgGray(linhaOrigem - 1 - i, colOrigem - 1 - i);
+            if (!onlyCanEat)
+                setBgGray(linhaOrigem - 1 - i, colOrigem - 1 - i);
         }
     }
 
