@@ -92,7 +92,7 @@ public class MoveManagement {
             to = translator.getCharFromPosition(right);
             moves.add(new Move(from, to));
         }
-        else if (tabuleiro.isEmpty(right.getPosition(pos, 2*rowDirection, 2))) {
+        else if (tabuleiro.isEmpty(right.getPosition(pos, 2*rowDirection, 2)) && tabuleiro.isEnemy(pos,right)) {
             to = translator.getCharFromPosition(right.getPosition(pos, 2*rowDirection, 2));
             moves.add(new Move(from, to));
         }
@@ -101,7 +101,7 @@ public class MoveManagement {
             to = translator.getCharFromPosition(left);
             moves.add(new Move(from, to));
         }
-        else if  (tabuleiro.isEmpty(left.getPosition(pos, 2*rowDirection, -2))) {
+        else if  (tabuleiro.isEmpty(left.getPosition(pos, 2*rowDirection, -2)) && tabuleiro.isEnemy(pos, left)) {
             to = translator.getCharFromPosition(left.getPosition(pos, 2*rowDirection, -2));
             moves.add(new Move(from, to));
         }

@@ -25,8 +25,11 @@ public class Translator {
 
         for (int i = 0; i < TAM; i++) {
             for (int j = 0; j < TAM; j++) {
-                if ((i + j) % 2 != 0)
-                    charToPos.put(c++, new Position(i, j));
+                if ((i + j) % 2 != 0) {
+                    Position pos = new Position(i, j);
+                    charToPos.put(c, pos);
+                    posToChar.put(pos, c++); // Esse daqui me deu um problema do cacete pq tava salvando o hash do objeto como chave e n a linha e coluna.
+                }
             }
         }
    }
@@ -35,7 +38,7 @@ public class Translator {
         return charToPos.get(c);
    }
 
-   public List<Position> convertoFromMoveToIndex(Move move) {
+   public List<Position> getPositionFromMove(Move move) {
         List<Position> list = new ArrayList<>();
         list.add(getPositionFromChar(move.from()));
         list.add(getPositionFromChar(move.to()));

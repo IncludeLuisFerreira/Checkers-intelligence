@@ -1,5 +1,7 @@
 package Model;
 
+import java.util.Objects;
+
 public class Position {
 
     private int Row;
@@ -24,4 +26,16 @@ public class Position {
         return new Position(pos.getRow() + r, pos.getCol() + c);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Position pos = (Position) obj;
+        return Row == pos.Row && Col == pos.Col;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(Row, Col);
+    }
 }

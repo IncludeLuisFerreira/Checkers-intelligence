@@ -32,12 +32,12 @@ public class Tabuleiro implements Cloneable {
             for (int j = 0; j < TAMANHO; j++) {
                 if ((i + j) % 2 != 0) {
                     if (i < 2) {
-                        matriz[i][j] = '2'; // Pretas
+                        matriz[i][j] = BLACKPIECE; // Pretas
                     } else if (i > 3) {
-                        matriz[i][j] = '1'; // Brancas
+                        matriz[i][j] = WHITEPIECE; // Brancas
                     }
                     else {
-                        matriz[i][j] = '0';
+                        matriz[i][j] = EMPTY;
                     }
                 }
                 else {
@@ -112,6 +112,11 @@ public class Tabuleiro implements Cloneable {
         return matriz[pos.getRow()][pos.getCol()];
     }
 
+    public char getType(int r, int c) {
+        if (isInvalidParam(r, c)) return '#';
+        return matriz[r][c];
+    }
+
     public int getTam() {
         return TAMANHO;
     }
@@ -148,6 +153,7 @@ public class Tabuleiro implements Cloneable {
     }
 
     public boolean isWhite(Position pos) {
+        if (isInvalidParam(pos)) return false;
         return "13".contains(String.valueOf(matriz[pos.getRow()][pos.getCol()]));
     }
 }

@@ -13,8 +13,8 @@ public class CaptureManagement {
 
     /* =========== FUNÇÃO DE REGRA DE CAPTURA DE UMA PEÇA SIMPLES ===========*/
     private boolean canSimpleCapture(Position from, Position to) {
-        int linhaMeio = (from.r() + to.r()) / 2;
-        int colunaMeio = (from.c() + to.c()) / 2;
+        int linhaMeio = (from.getRow() + to.getRow()) / 2;
+        int colunaMeio = (from.getCol() + to.getCol()) / 2;
         char piece = tabuleiro.getType(from);
         Position meio = new Position(linhaMeio, colunaMeio);
 
