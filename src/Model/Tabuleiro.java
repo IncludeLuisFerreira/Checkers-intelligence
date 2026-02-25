@@ -82,30 +82,34 @@ public class Tabuleiro implements Cloneable {
     }
 
     public boolean isDama(Position pos) {
-       char type = matriz[pos.r()][pos.c()];
+       char type = matriz[pos.getRow()][pos.getCol()];
        return type == WHITEKING || type == BLACKKING;
     }
 
     public boolean isDiagonal(Position from, Position to) {
-        return ((from.r() + from.c()) == (to.r() + to.c()) || (from.r() - from.c()) == (to.r() - to.c()));
+        return ((from.getRow() + from.getCol()) == (to.getRow() + to.getCol()) || (from.getRow() - from.getCol()) == (to.getRow() - to.getCol()));
     }
 
 
     /*======================= FUNÇÃO PARA TESTAR SE A CASA É VAZIA =======================*/
     public boolean isEmpty(Position pos) {
-        if (isNotParamValid(pos)) return false;
-        return matriz[pos.r()][pos.c()] == EMPTY;
+        if (isInvalidParam(pos)) return false;
+        return matriz[pos.getRow()][pos.getCol()] == EMPTY;
     }
 
     /*======================= FUNÇÃO DE UTILIDADE PARA EVITAR PARÂMETROS FORA DO LIMITE =======================*/
-    public boolean isNotParamValid(Position pos) {
-        return pos.r() < 0 || pos.r() > 5 || pos.c() < 0 || pos.c() > 5;
+    public boolean isInvalidParam(Position pos) {
+        return pos.getRow() < 0 || pos.getRow() > 5 || pos.getCol() < 0 || pos.getCol() > 5;
+    }
+
+    public boolean isInvalidParam(int r, int c) {
+        return r < 0 || r > 5 || c < 0 || c > 5;
     }
 
     /*======================= PEGAR O TIPO DA PEÇA EM UMA COORDENADA =======================*/
     public char getType(Position pos) {
-        if (isNotParamValid(pos)) return '#';  // Tipo não reconhecido
-        return matriz[pos.r()][pos.c()];
+        if (isInvalidParam(pos)) return '#';  // Tipo não reconhecido
+        return matriz[pos.getRow()][pos.getCol()];
     }
 
     public int getTam() {
@@ -115,8 +119,8 @@ public class Tabuleiro implements Cloneable {
     /*======================= VERIFICA SE É INIMIGO =======================*/
     /// Verifica se a peça na coordenada (r1, c1) é inimiga da peça na coordenada (r2, c2)
     public boolean isEnemy(Position piece, Position otherPiece) {
-        char type1 = matriz[piece.r()][piece.c()];
-        char type2 = matriz[otherPiece.r()][otherPiece.c()];
+        char type1 = matriz[piece.getRow()][piece.getCol()];
+        char type2 = matriz[otherPiece.getRow()][otherPiece.getCol()];
 
         if (type2 == type1)
             return false;
@@ -136,14 +140,14 @@ public class Tabuleiro implements Cloneable {
     }
     
     public void setPos(Position pos, char type) {
-        matriz[pos.r()][pos.c()] = type;
+        matriz[pos.getRow()][pos.getCol()] = type;
     }
     
     public char getPos(Position pos) {
-        return matriz[pos.r()][pos.c()];
+        return matriz[pos.getRow()][pos.getCol()];
     }
 
     public boolean isWhite(Position pos) {
-        return "13".contains(String.valueOf(matriz[pos.r()][pos.c()]));
+        return "13".contains(String.valueOf(matriz[pos.getRow()][pos.getCol()]));
     }
 }

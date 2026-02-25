@@ -1,5 +1,6 @@
 package Engine;
 
+import Model.Position;
 import Model.Tabuleiro;
 
 
@@ -10,8 +11,14 @@ public class Engine {
     private final CaptureManagement captureManagement;
     private final TurnManagement turnManagement;
 
-    private int rowOrigin = -1;
-    private int colOrigin = -1;
+    Position position = new Position(-1, -1);
+
+    private int countWhite = 6;
+    private int countBlack = 6;
+
+    boolean gameOver = false;
+    boolean haveCaptured = false;
+    boolean canCapture = false;
 
     public Engine(Tabuleiro tabuleiro) {
         this.tabuleiro = tabuleiro;
@@ -24,10 +31,26 @@ public class Engine {
     public void MainGame(int r, int c) {
         // Lógica do jogo
 
+
+
+
         // Verifica turno
+        turnManagement.decide(haveCaptured, canCapture);
         boolean turn = turnManagement.whoseTurn();
 
+        if (position.getRow() == -1) {
 
+
+            if (tabuleiro.isWhite(position)  ^ turn) {
+                position.setPosition(r, c);
+
+
+            }
+        }
+
+    }
+
+    private void selectPiece(Position pos) {
 
     }
 

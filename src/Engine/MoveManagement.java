@@ -58,7 +58,9 @@ public class MoveManagement {
     }
 
     /* =========== FUNÇÃO DE MOVIMENTO DE UMA DAMA ===========*/
-    public void execKingMove(Position from, Position to) {
+    public void execKingMove(Move move) {
+        Position to = translator.getPositionFromChar(move.to());
+        Position from = translator.getPositionFromChar(move.from());
         tabuleiro.setPos(to, tabuleiro.getPos(from));
         tabuleiro.setPos(from, Tabuleiro.EMPTY);
     }

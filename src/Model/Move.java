@@ -1,4 +1,3 @@
 package Model;
 
-public record Move(char from,char to) {}
-
+public record Move(char from, char to) {}
