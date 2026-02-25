@@ -1,13 +1,14 @@
 package UI;
 
-import Entities.CasaBotao;
-import Entities.Tabuleiro;
-import Logic.LogicTabuleiro;
+import Model.CasaBotao;
+import Model.Tabuleiro;
+import Engine.Engine;
 
 import javax.swing.*;
 import java.awt.*;
 
 /**
+ * Classe vai precisar de um tempo maior para refatorar
  *
  * @author Douglas
  */
@@ -16,20 +17,18 @@ public final class MainInterfaceGrafica extends JFrame {
     private final int TAMANHO = 6;
     private final Tabuleiro tabuleiroLogico;
     private final CasaBotao[][]  tabuleiroInterface = new CasaBotao[TAMANHO][TAMANHO];
-    private final LogicTabuleiro logic;        // Objeto que verifica toda a logica de movimetos do jogo
+    private final Engine engine;        // Objeto que verifica toda a logica de movimetos do jogo
     private static PaintTabuleiro paint;        // Objeto que pinta as jogadas de um jogador tem com a sua peca
 
     private int linhaOrigem = -1, colOrigem = -1;
 
     public MainInterfaceGrafica() {
-        
-        /*
-            TABULEIRO DO JOGO
-        */
-        tabuleiroLogico = new Tabuleiro();
-        logic = new LogicTabuleiro(tabuleiroLogico);
-        paint = new PaintTabuleiro(logic, tabuleiroInterface);
 
+        tabuleiroLogico = new Tabuleiro();
+        engine = new Engine(tabuleiroLogico);
+        //paint = new PaintTabuleiro(, tabuleiroInterface); Terá mudanças neste construtor
+
+        // Construção da janela da aplicação
         setTitle("DISCIPLINA - IA - MINI JOGO DE DAMA");
         setSize(800, 800);
         setLayout(new GridLayout(TAMANHO, TAMANHO));
@@ -45,7 +44,6 @@ public final class MainInterfaceGrafica extends JFrame {
         for (int i = 0; i < TAMANHO; i++) {
             for (int j = 0; j < TAMANHO; j++) {
                 tabuleiroInterface[i][j] = new CasaBotao();
-
                 paint.colorirCasa(i, j);
 
                 final int linha = i;
@@ -57,66 +55,69 @@ public final class MainInterfaceGrafica extends JFrame {
     }
 
     private void tratarClique(int linha, int col) {
-        boolean turn = logic.whoseTurn();
-        // Caso 1: Nenhuma peça selecionada ainda
-        if (linhaOrigem == -1) {
+        engine.MainGame(linha, col);
+        sincronizarInterface();
 
-            // Talvez um pessimo jeito de implementar turno
-            String pieces;
-            if (turn) {
-                pieces = "13";
-            }
-            else
-                pieces = "24";
-
-
-            if (pieces.contains(String.valueOf(logic.getType(linha, col)))) {
-                    boolean onlyCanEat = false;
-                if (logic.anyoneCanEat(turn)) {
-                    onlyCanEat = true;
-                    if (!logic.pieceCanEat(linha, col)) {
-
-                        return;
-                    }
-                }
-
-                linhaOrigem = linha;
-                colOrigem = col;
-                tabuleiroInterface[linha][col].setBackground(Color.YELLOW); // Destaque do clique
-                paint.mostrarPossiveisJogadas(linha, col, onlyCanEat);
-        }
-
-        }
-        // Caso 2: Já existe uma peça selecionada, tentando mover
-        else {
-
-            // Se clicar na mesma peça, cancela a seleção
-            if (linhaOrigem == linha && colOrigem == col) {
-                paint.cancelarPossiveisJogadas(tabuleiroLogico.getMatriz()[linhaOrigem][colOrigem], linhaOrigem, colOrigem);
-                cancelarSelecao();
-                return;
-            }
-
-
-            char antigoType = tabuleiroLogico.getMatriz()[linhaOrigem][colOrigem];
-            boolean sucesso = logic.moverPecaLogica(linhaOrigem, colOrigem, linha, col);
-
-
-            if (sucesso) {
-                paint.cancelarPossiveisJogadas(antigoType, linhaOrigem, colOrigem);
-                cancelarSelecao();
-                sincronizarInterface();
-                logic.changeTurn();
-
-                /*
-                    VERIFICAÇÃO DE QUEM É A VEZ DE JOGAR E IMPLEMENTAÇÃO DA JOGADA DA IA
-                */
-            } else {
-                // Se o movimento for inválido (ex: clicar em cima de outra peça)
-                paint.cancelarPossiveisJogadas(tabuleiroLogico.getMatriz()[linhaOrigem][colOrigem], linhaOrigem, colOrigem);
-                cancelarSelecao();
-            }
-        }
+//        boolean turn = logic.whoseTurn();
+//        // Caso 1: Nenhuma peça selecionada ainda
+//        if (linhaOrigem == -1) {
+//
+//            // Talvez um pessimo jeito de implementar turno
+//            String pieces;
+//            if (turn) {
+//                pieces = "13";
+//            }
+//            else
+//                pieces = "24";
+//
+//
+//            if (pieces.contains(String.valueOf(logic.getType(linha, col)))) {
+//                    boolean onlyCanEat = false;
+//                if (logic.anyoneCanEat(turn)) {
+//                    onlyCanEat = true;
+//                    if (!logic.pieceCanEat(linha, col)) {
+//
+//                        return;
+//                    }
+//                }
+//
+//                linhaOrigem = linha;
+//                colOrigem = col;
+//                tabuleiroInterface[linha][col].setBackground(Color.YELLOW); // Destaque do clique
+//                paint.mostrarPossiveisJogadas(linha, col, onlyCanEat);
+//        }
+//
+//        }
+//        // Caso 2: Já existe uma peça selecionada, tentando mover
+//        else {
+//
+//            // Se clicar na mesma peça, cancela a seleção
+//            if (linhaOrigem == linha && colOrigem == col) {
+//                paint.cancelarPossiveisJogadas(tabuleiroLogico.getMatriz()[linhaOrigem][colOrigem], linhaOrigem, colOrigem);
+//                cancelarSelecao();
+//                return;
+//            }
+//
+//
+//            char antigoType = tabuleiroLogico.getMatriz()[linhaOrigem][colOrigem];
+//            boolean sucesso = logic.moverPecaLogica(linhaOrigem, colOrigem, linha, col);
+//
+//
+//            if (sucesso) {
+//                paint.cancelarPossiveisJogadas(antigoType, linhaOrigem, colOrigem);
+//                cancelarSelecao();
+//                sincronizarInterface();
+//                logic.changeTurn();
+//
+//                /*
+//                    VERIFICAÇÃO DE QUEM É A VEZ DE JOGAR E IMPLEMENTAÇÃO DA JOGADA DA IA
+//                */
+//            } else {
+//                // Se o movimento for inválido (ex: clicar em cima de outra peça)
+//                paint.cancelarPossiveisJogadas(tabuleiroLogico.getMatriz()[linhaOrigem][colOrigem], linhaOrigem, colOrigem);
+//                cancelarSelecao();
+//            }
+//        }
     }
 
     // Quebrar essa funcao em logic e em paint

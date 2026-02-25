@@ -1,3 +1,3 @@
 package Model;
 
-public record IntPair(int r, int c) {}
+public record Position(int r, int c) {}

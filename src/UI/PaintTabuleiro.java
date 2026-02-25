@@ -1,7 +1,7 @@
 package UI;
 
-import Entities.CasaBotao;
-import Logic.LogicTabuleiro;
+import Model.CasaBotao;
+import Engine.Engine;
 import java.awt.*;
 
 /**
@@ -19,15 +19,15 @@ import java.awt.*;
  * - Restaurar a coloração original após cancelar destaques.
  * <p>
  * //TODO
- *  Implementar IntPair e passar toda a lógica de jogadas possiveis,
+ *  Implementar Position e passar toda a lógica de jogadas possiveis,
  *  retornar List<Intpair> para essa classe e assim colorir
  */
 public class PaintTabuleiro {
 
-    private final LogicTabuleiro logic;
+    private final Engine logic;
     private final CasaBotao[][] tabuleiroInterface;
 
-    public PaintTabuleiro(LogicTabuleiro logic, CasaBotao[][] tabuleiroInterface) {
+    public PaintTabuleiro(Engine logic, CasaBotao[][] tabuleiroInterface) {
         this.tabuleiroInterface = tabuleiroInterface;
         this.logic = logic;
     }
@@ -80,7 +80,7 @@ public class PaintTabuleiro {
         tabuleiroInterface[r][c].setBackground(new Color(128, 128, 128));
     }
 
-    private void setBgRed(int r, int c) {
+    private void setBgLightGreen(int r, int c) {
         if (logic.isNotParamValid(r, c)) return ;
         tabuleiroInterface[r][c].setBackground(new Color(70, 255, 61));
     }
@@ -92,18 +92,18 @@ public class PaintTabuleiro {
         if (logic.isEmpty(linhaOrigem + direcao, colOrigem - 1) && !onlyCanEat) {
             setBgGray(linhaOrigem + direcao, colOrigem - 1);
         }
-        else if (logic.isEmpty(linhaOrigem + (2 * direcao), colOrigem - 2) && logic.isEnemy(linhaOrigem, colOrigem, linhaOrigem + direcao, colOrigem - 1)) {
+        else if (logic.isEmpty(linhaOrigem + (2 * direcao), colOrigem - 2) && logic.isEnemy(linhaOrigem, colOrigem, linhaOrigem + direcao, colOrigem - 1) && onlyCanEat) {
 
             setBgGray(linhaOrigem + (2 * direcao), colOrigem - 2);
-            setBgRed(linhaOrigem + direcao, colOrigem - 1);
+            setBgLightGreen(linhaOrigem + direcao, colOrigem - 1);
         }
 
         if (logic.isEmpty(linhaOrigem + direcao, colOrigem + 1) && !onlyCanEat) {
             setBgGray(linhaOrigem + direcao, colOrigem + 1);
         }
-        else if (logic.isEmpty(linhaOrigem + (2 * direcao), colOrigem + 2) && logic.isEnemy(linhaOrigem, colOrigem, linhaOrigem + direcao, colOrigem + 1)) {
+        else if (logic.isEmpty(linhaOrigem + (2 * direcao), colOrigem + 2) && logic.isEnemy(linhaOrigem, colOrigem, linhaOrigem + direcao, colOrigem + 1) && onlyCanEat) {
             setBgGray(linhaOrigem + (2 * direcao), colOrigem + 2);
-            setBgRed(linhaOrigem + direcao, colOrigem + 1);
+            setBgLightGreen(linhaOrigem + direcao, colOrigem + 1);
         }
     }
 
@@ -120,7 +120,7 @@ public class PaintTabuleiro {
             if (!logic.isEmpty(linhaOrigem + 1 + i, colOrigem + 1 + i)) {
 
                 if (logic.isEmpty(linhaOrigem + 2 + i, colOrigem + 2 + i)) {
-                    setBgRed(linhaOrigem + 1 + i, colOrigem + 1 + i);
+                    setBgLightGreen(linhaOrigem + 1 + i, colOrigem + 1 + i);
                     setBgGray(linhaOrigem + 2 + i, colOrigem + 2 + i);
                 }
 
@@ -135,7 +135,7 @@ public class PaintTabuleiro {
             if (!logic.isEmpty(linhaOrigem -1 - i, colOrigem + 1 + i)) {
 
                 if (logic.isEmpty(linhaOrigem - 2 - i, colOrigem + 2 + i)) {
-                    setBgRed(linhaOrigem -1 - i, colOrigem + 1 + i);
+                    setBgLightGreen(linhaOrigem -1 - i, colOrigem + 1 + i);
                     setBgGray(linhaOrigem - 2 - i, colOrigem + 2 + i);
                 }
 
@@ -150,7 +150,7 @@ public class PaintTabuleiro {
             if (!logic.isEmpty(linhaOrigem + 1 + i, colOrigem - 1 - i)) {
 
                 if (logic.isEmpty(linhaOrigem  + 2 + i, colOrigem - 2 - i)) {
-                    setBgRed(linhaOrigem + 1 + i, colOrigem - 1 - i);
+                    setBgLightGreen(linhaOrigem + 1 + i, colOrigem - 1 - i);
                     setBgGray(linhaOrigem  + 2 + i, colOrigem - 2 - i);
                 }
                 break;
@@ -164,7 +164,7 @@ public class PaintTabuleiro {
             if (!logic.isEmpty(linhaOrigem - 1 - i, colOrigem - 1 - i)) {
 
                 if (logic.isEmpty(linhaOrigem - 2 - i, colOrigem - 2 - i)) {
-                    setBgRed(linhaOrigem - 1 - i, colOrigem - 1 - i);
+                    setBgLightGreen(linhaOrigem - 1 - i, colOrigem - 1 - i);
                     setBgGray(linhaOrigem - 2 - i, colOrigem - 2 - i);
                 }
                 break;

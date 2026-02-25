@@ -1,4 +1,4 @@
-package Entities;
+package Model;
 
 import javax.swing.*;
 import java.awt.*;

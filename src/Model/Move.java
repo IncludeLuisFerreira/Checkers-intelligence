@@ -1,4 +1,4 @@
 package Model;
 
-public record Movee() {
-}
+public record Move(char from,char to) {}
+

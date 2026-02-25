@@ -134,4 +134,16 @@ public class Tabuleiro implements Cloneable {
     public void setMatriz(char[][] matriz) {
         this.matriz = matriz;
     }
+    
+    public void setPos(Position pos, char type) {
+        matriz[pos.r()][pos.c()] = type;
+    }
+    
+    public char getPos(Position pos) {
+        return matriz[pos.r()][pos.c()];
+    }
+
+    public boolean isWhite(Position pos) {
+        return "13".contains(String.valueOf(matriz[pos.r()][pos.c()]));
+    }
 }
