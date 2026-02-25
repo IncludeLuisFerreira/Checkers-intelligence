@@ -1,6 +1,6 @@
-package Logic;
+package Engine;
 
-import Entities.Tabuleiro;
+import Model.Tabuleiro;
 
 
 /**
@@ -28,22 +28,8 @@ public class LogicTabuleiro {
         this.tabuleiroLogico = tabuleiroLogico;
     }
 
-    /* =========== FUNÇÃO DE REGRA DE MOVIMENTO DE UMA PEÇA SIMPLES ===========*/
-    private boolean simpleMove(int r1, int c1, int r2, int c2) {
-        if (!isEmpty(r2, c2))
-            return false;
 
-        if (tabuleiroLogico.getMatriz()[r1][c1] == '1' && r1 <= r2) {
-            return false;
-        }
-        else if (tabuleiroLogico.getMatriz()[r1][c1] == '2' && r1 >= r2) {
-            return false;
-        }
 
-        tabuleiroLogico.getMatriz()[r2][c2] = tabuleiroLogico.getMatriz()[r1][c1];
-        tabuleiroLogico.getMatriz()[r1][c1] = '0';
-        return true;
-    }
 
     /*======================= VERIFICA CAPTURA =======================*/
     private boolean verifyCapture(int r1, int c1, int r2, int c2) {
@@ -72,53 +58,9 @@ public class LogicTabuleiro {
     }
 
 
-    /*======================= MOVIMENTOS DA DAMA =======================*/
-    private boolean moveDama(int r1, int c1, int r2, int c2) {
 
-        if (!isEmpty(r2, c2))
-            return false;
 
-        int direcaoCol = (c1 - c2 < 0 ? -1 : 1);
-        int direcaoRow = (r1 - r2 < 0 ? -1 : 1);
 
-        if (!isEmpty(r2 + direcaoRow, c2 + direcaoCol) && isEnemy(r1, c1, r2 + direcaoRow, c2 + direcaoCol)) {
-            tabuleiroLogico.getMatriz()[r2+direcaoRow][c2+direcaoCol] = '0';
-        }
-
-        tabuleiroLogico.setCanEat(r1, c1, false);
-        tabuleiroLogico.getMatriz()[r2][c2] = tabuleiroLogico.getMatriz()[r1][c1];
-        tabuleiroLogico.getMatriz()[r1][c1] = '0';
-
-        return true;
-    }
-
-    /*======================= FUNÇÃO GERAL DE MOVIMENTO DE PEÇAS =======================*/
-    public boolean moverPecaLogica(int r1, int c1, int r2, int c2) {
-
-        boolean mov = false;
-
-        // Movimento simples
-        if (Math.abs(r1 - r2) == 1 && Math.abs(c1 - c2) == 1)
-            mov =  simpleMove(r1, c1, r2, c2);
-
-        // Movimento de captura
-        if (Math.abs(r1 - r2) == 2 && Math.abs(c1 - c2) == 2)
-            mov = verifyCapture(r1, c1, r2, c2);
-
-        if (isDama(r1, c1) && isDiagonal(r1, c1, r2, c2))
-            mov =  moveDama(r1, c1, r2, c2);
-
-        if (mov) {
-            if (tabuleiroLogico.getMatriz()[r2][c2] == '2' && r2 == 5) {
-                tabuleiroLogico.getMatriz()[r2][c2] = '4';
-            }
-            if (tabuleiroLogico.getMatriz()[r2][c2] == '1' && r2 == 0) {
-                tabuleiroLogico.getMatriz()[r2][c2] = '3';
-            }
-        }
-
-        return mov;
-    }
 
     /*======================= LÓGICA DE TURNO =======================*/
     // True -> white; False -> black
