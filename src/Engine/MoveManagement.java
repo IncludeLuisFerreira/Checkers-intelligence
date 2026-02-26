@@ -9,7 +9,6 @@ public class MoveManagement {
 
     private final Tabuleiro tabuleiro;
     private final Translator translator;
-    private final Position temp = new Position(-1, -1);
 
     public MoveManagement(Tabuleiro tabuleiro, Translator converter) {
 
@@ -80,41 +79,83 @@ public class MoveManagement {
     private List<Move> getMovesPiece(char from) {
         Position pos = translator.getPositionFromChar(from);
         List<Move> moves = new ArrayList<>();
-
         int rowDirection = (tabuleiro.isWhite(pos) ? -1 : 1);
 
-        Position right = pos.getPosition(pos, rowDirection, 1);
-        Position left = pos.getPosition(pos, rowDirection, -1);
-
-        char to;
-
-        if (tabuleiro.isEmpty(right)) {
-            to = translator.getCharFromPosition(right);
-            moves.add(new Move(from, to));
-        }
-        else if (tabuleiro.isEmpty(right.getPosition(pos, 2*rowDirection, 2)) && tabuleiro.isEnemy(pos,right)) {
-            to = translator.getCharFromPosition(right.getPosition(pos, 2*rowDirection, 2));
-            moves.add(new Move(from, to));
-        }
-
-        if (tabuleiro.isEmpty(left)) {
-            to = translator.getCharFromPosition(left);
-            moves.add(new Move(from, to));
-        }
-        else if  (tabuleiro.isEmpty(left.getPosition(pos, 2*rowDirection, -2)) && tabuleiro.isEnemy(pos, left)) {
-            to = translator.getCharFromPosition(left.getPosition(pos, 2*rowDirection, -2));
-            moves.add(new Move(from, to));
-        }
-
+        addAllMoves(moves, pos, rowDirection);
         return moves;
+    }
+
+    private void addAllMoves(List<Move> move ,Position pos,  int rowDirection) {
+        int[] colDirection = {1,-1};
+        char from = translator.getCharFromPosition(pos);
+
+        for (int col : colDirection) {
+            Position newpos = pos.getPosition(pos, rowDirection, col);
+            if (tabuleiro.isEmpty(newpos)) {
+                move.add(new Move(from, translator.getCharFromPosition(newpos), false));
+            }
+            else if (tabuleiro.isEnemy(pos, newpos) && tabuleiro.isEmpty(newpos.getPosition(newpos, rowDirection, col))) {
+                move.add(new Move(from, translator.getCharFromPosition(newpos.getPosition(newpos, rowDirection, col)), true));
+            }
+        }
     }
 
     private List<Move> getMovesKing(char from) {
         Position pos = translator.getPositionFromChar(from);
         List<Move> moves = new ArrayList<>();
 
-        return null;
+        addAllMovesKing(moves, pos, from);
+        return moves;
     }
 
+    private void addAllMovesKing(List<Move> moves, Position pos, char from) {
+
+        int[][] direction = {{1,1}, {1, -1}, {-1, 1}, {-1, -1}};
+        Position current = pos;
+
+        for (int[] dir : direction) {
+
+            while (true) {
+                current = current.getPosition(current, dir[0], dir[1]);
+
+                if (tabuleiro.isInvalidParam(current)) break;
+
+                if (!tabuleiro.isEnemy(pos, current)) break;
+
+                if (tabuleiro.isEmpty(current))
+                    moves.add(new Move(from, translator.getCharFromPosition(current), false));
+               else {
+                   Position afterEnemy = current.getPosition(current, dir[0], dir[1]);
+
+                   if (tabuleiro.isEmpty(afterEnemy))
+                       moves.add(new Move(from, translator.getCharFromPosition(afterEnemy), true));
+                }
+            }
+        }
+    }
+
+    private List<Move> getCaptureMoves(char from, List<Move> moves) {
+        Position pos = translator.getPositionFromChar(from);
+        int direction = (tabuleiro.getType(pos) == Tabuleiro.WHITEPIECE) ? -1 : 1;
+        List<Move> captureMoves = new ArrayList<>();
+
+        for (Move move : moves) {
+            if (move.isCapture())
+                captureMoves.add(move);
+        }
+        return captureMoves;
+    }
+
+    private List<Move> getCaptureKingMoves(char from, List<Move> moves) {
+        List<Move> captureMoves = new ArrayList<>();
+
+        for (Move move : moves) {
+            if (move.isCapture()) {
+                captureMoves.add(move);
+            }
+        }
+
+        return captureMoves;
+    }
 
 }
