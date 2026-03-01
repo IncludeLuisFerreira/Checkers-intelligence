@@ -1,7 +1,5 @@
 package View;
 
-import Model.CasaBotao;
-import Model.Tabuleiro;
 import Engine.Engine;
 
 import javax.swing.*;
@@ -9,51 +7,43 @@ import java.awt.*;
 
 public final class Interface extends JFrame {
 
-    private final int LENGHT = 6;
-    private final CasaBotao[][] boardInterface = new CasaBotao[LENGHT][LENGHT];
-    private final Engine engine;
-    private final Tabuleiro tabuleiro;
+    private final int LENGTH = 6;
+    private CasaBotao[][] boardInterface;
+    private Engine engine;
 
-    public Interface() {
-        tabuleiro = new Tabuleiro();
-        engine = new Engine(tabuleiro, boardInterface);
+
+    public Interface(CasaBotao[][] botoes, Engine engine) {
+        boardInterface = botoes;
+        this.engine = engine;
 
         setInterface();
-        initComponents();
-        sincronize();
-
+        montarLayout(boardInterface);
         setVisible(true);
+
     }
 
     private void setInterface() {
         setTitle("DISCIPLINA - IA - MINI JOGO DE DAMA");
         setSize(800, 800);
-        setLayout(new GridLayout(LENGHT, LENGHT));
+        setLayout(new GridLayout(LENGTH, LENGTH));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    private void initComponents() {
-        for (int i = 0; i< LENGHT; i++) {
-            for (int j = 0; j < LENGHT; j++) {
-                boardInterface[i][j] = new CasaBotao();
-                engine.initColorSquares(i, j);
+    private void montarLayout(CasaBotao[][] boardInterface) {
+        setLayout(new GridLayout(LENGTH, LENGTH));
+        for (int i = 0; i < LENGTH; i++) {
+            for (int j = 0; j < LENGTH; j++) {
+
+                engine.paint(i, j);
 
                 final int row = i;
                 final int col = j;
-                boardInterface[i][j].addActionListener(_ -> engine.MainGame(row,col));
                 add(boardInterface[i][j]);
+                boardInterface[i][j].addActionListener(_ -> engine.handleClick(row, col));
             }
         }
     }
 
-    private void sincronize() {
-        for  (int i = 0; i < LENGHT; i++) {
-            for (int j = 0; j < LENGHT; j++) {
-                char piece = tabuleiro.getType(i, j);
-                boardInterface[i][j].setTipoPeca(piece);
-            }
-        }
-    }
 
 
 }

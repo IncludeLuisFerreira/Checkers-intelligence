@@ -1,7 +1,7 @@
 package Engine;
 
 import Model.Position;
-import Model.Move;
+import Model.Node;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +28,7 @@ public class Translator {
                 if ((i + j) % 2 != 0) {
                     Position pos = new Position(i, j);
                     charToPos.put(c, pos);
-                    posToChar.put(pos, c++); // Esse daqui me deu um problema do cacete pq tava salvando o hash do objeto como chave e n a linha e coluna.
+                    posToChar.put(pos, c++); // Esse daqui me deu um problema do cacete porque tava salvando o hash do objeto como chave e n a linha e coluna.
                 }
             }
         }
@@ -38,10 +38,10 @@ public class Translator {
         return charToPos.get(c);
    }
 
-   public List<Position> getPositionFromMove(Move move) {
+   public List<Position> getPositionFromMove(Node move) {
         List<Position> list = new ArrayList<>();
-        list.add(getPositionFromChar(move.from()));
-        list.add(getPositionFromChar(move.to()));
+        list.add(getPositionFromChar(move.getOrigin()));
+        list.add(getPositionFromChar(move.getDest()));
         return list;
    }
 

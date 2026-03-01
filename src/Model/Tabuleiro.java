@@ -124,6 +124,7 @@ public class Tabuleiro implements Cloneable {
     /*======================= VERIFICA SE É INIMIGO =======================*/
     /// Verifica se a peça na coordenada (r1, c1) é inimiga da peça na coordenada (r2, c2)
     public boolean isEnemy(Position piece, Position otherPiece) {
+        if (isInvalidParam(otherPiece)) return false;
         char type1 = matriz[piece.getRow()][piece.getCol()];
         char type2 = matriz[otherPiece.getRow()][otherPiece.getCol()];
 

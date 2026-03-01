@@ -57,20 +57,27 @@ public class PaintTabuleiro {
     }
 
     // Péssimo jeito de implementar vizualização de jogadas, vai causar um ‘bug’ mais tarde
-    public void showPossibleMoves(Position from, List<Move> moves) {
+    public void showPossibleMoves(Position from, List<Node> moves) {
         setBg(from, Color.YELLOW);
-        for (Move move : moves) {
+        if (moves == null || moves.isEmpty()) return;
+        for (Node move : moves) {
+            System.out.println("Movimento: " + move.getOrigin() + "->" + move.getDest());
             Position pos = translator.getPositionFromMove(move).getLast();
             setBg(pos, Color.GRAY);
         }
     }
 
-    public void unShowPossibleMoves(Position from, List<Move> moves) {
+    public void unShowPossibleMoves(Position from, List<Node> moves) {
         setBg(from, GREEN);
-        for (Move move : moves) {
+        if (moves == null || moves.isEmpty()) return;
+        for (Node move : moves) {
             Position pos = translator.getPositionFromMove(move).getLast();
             setBg(pos, GREEN);
         }
+    }
+
+    public void atualizarCasa(int i, int j, char piece) {
+        tabuleiroInterface[i][j].setTipoPeca(piece);
     }
 
 
