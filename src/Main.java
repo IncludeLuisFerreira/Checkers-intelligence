@@ -16,6 +16,7 @@ public class Main {
 
             Engine engine = new Engine(tabuleiro, botoes);
             Interface ui = new Interface(botoes, engine);
+            engine.setGameOverListener(ui::declararVencedor);
             engine.sincronizarView();
 
         });

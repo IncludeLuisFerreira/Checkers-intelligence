@@ -15,13 +15,11 @@ public class TurnManagement {
         return turn;
     }
 
-    public void decide(boolean haveCaptured, boolean canCapture) {
-        if (!haveCaptured || !canCapture) {
-            changeTurn();
-        }
+    public void changeTurn() {
+        turn = !turn;
     }
 
-    private void changeTurn() {
-        turn = !turn;
+    public boolean isGameOver(int whitePieces, int blackPieces) {
+        return whitePieces == 0 || blackPieces == 0;
     }
 }

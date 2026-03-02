@@ -61,7 +61,6 @@ public class PaintTabuleiro {
         setBg(from, Color.YELLOW);
         if (moves == null || moves.isEmpty()) return;
         for (Node move : moves) {
-            System.out.println("Movimento: " + move.getOrigin() + "->" + move.getDest());
             Position pos = translator.getPositionFromMove(move).getLast();
             setBg(pos, Color.GRAY);
         }

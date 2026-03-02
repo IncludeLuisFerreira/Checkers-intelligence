@@ -18,20 +18,41 @@ public class MoveManagement {
         this.promotionManagement = new PromotionManagement(tabuleiro);
     }
 
-    /* =========== FUNÇÃO DE REGRA DE MOVIMENTO DE UMA PEÇA SIMPLES ===========*/
-    public boolean canMove(List<Node> moves, Node move) {
-        return moves.contains(move);
-    }
-
     /* =========== FUNÇÃO DE MOVIMENTO DE UMA PEÇA SIMPLES ===========*/
     public void execMove(Node move) {
-        Position to = translator.getPositionFromChar(move.getOrigin());
-        Position from = translator.getPositionFromChar(move.getDest());
+        Position to = translator.getPositionFromChar(move.getDest());
+        Position from = translator.getPositionFromChar(move.getOrigin());
+
+        // Verificar se é captura e remover peça capturada
+        if (isCapture(move)) {
+            removeCapturedPiece(from, to);
+        }
 
         tabuleiro.setPos(to, tabuleiro.getPos(from));
         tabuleiro.setPos(from, Tabuleiro.EMPTY);
 
         promotionManagement.canBePromoted(to);
+    }
+
+    private void removeCapturedPiece(Position from, Position to) {
+        int rowDir = (to.getRow() - from.getRow()) > 0 ? 1 : -1;
+        int colDir = (to.getCol() - from.getCol()) > 0 ? 1 : -1;
+        
+        int currentRow = from.getRow() + rowDir;
+        int currentCol = from.getCol() + colDir;
+        
+        // Percorrer diagonal até encontrar o inimigo
+        while (currentRow != to.getRow() && currentCol != to.getCol()) {
+            Position current = new Position(currentRow, currentCol);
+            
+            if (!tabuleiro.isEmpty(current) && tabuleiro.isEnemy(from, current)) {
+                tabuleiro.setPos(current, Tabuleiro.EMPTY);
+                break;
+            }
+            
+            currentRow += rowDir;
+            currentCol += colDir;
+        }
     }
 
     /* =========== FUNÇÃO DE REGRA DE UMA DAMA ===========*/
@@ -45,22 +66,90 @@ public class MoveManagement {
 
     /* =========== FUNÇÃO DE MOVIMENTO DE UMA DAMA ===========*/
     public void execKingMove(Node move) {
-        Position to = translator.getPositionFromChar(move.getOrigin());
-        Position from = translator.getPositionFromChar(move.getDest());
+        Position to = translator.getPositionFromChar(move.getDest());
+        Position from = translator.getPositionFromChar(move.getOrigin());
         tabuleiro.setPos(to, tabuleiro.getPos(from));
         tabuleiro.setPos(from, Tabuleiro.EMPTY);
     }
 
     public List<Node> getMoves(char from) {
         Position pos = translator.getPositionFromChar(from);
-        List<Node> moves = new ArrayList<>();
+        List<Node> allMoves = new ArrayList<>();
+        List<Node> captureMoves = new ArrayList<>();
 
         if (tabuleiro.isDama(pos))
-            moves.addAll(getMovesKing(from));
+            allMoves.addAll(getMovesKing(from));
         else
-            moves.addAll(getMovesPiece(from));
+            allMoves.addAll(getMovesPiece(from));
 
-        return moves;
+        // Separar movimentos de captura
+        for (Node move : allMoves) {
+            if (isCapture(move)) {
+                captureMoves.add(move);
+            }
+        }
+
+        // Se houver capturas disponíveis, retornar apenas elas
+        return captureMoves.isEmpty() ? allMoves : captureMoves;
+    }
+    
+    public List<Node> getAllMovesForPiece(char from) {
+        Position pos = translator.getPositionFromChar(from);
+        List<Node> allMoves = new ArrayList<>();
+
+        if (tabuleiro.isDama(pos))
+            allMoves.addAll(getMovesKing(from));
+        else
+            allMoves.addAll(getMovesPiece(from));
+
+        return allMoves;
+    }
+
+    public boolean isCapture(Node move) {
+        Position from = translator.getPositionFromChar(move.getOrigin());
+        Position to = translator.getPositionFromChar(move.getDest());
+        
+        int rowDiff = Math.abs(to.getRow() - from.getRow());
+        int colDiff = Math.abs(to.getCol() - from.getCol());
+        
+        // Captura simples: movimento de 2 casas na diagonal
+        if (rowDiff == 2 && colDiff == 2) {
+            return true;
+        }
+        
+        // Captura de dama: 2 ou mais casas na diagonal com inimigo no meio
+        if (tabuleiro.isDama(from) && rowDiff >= 2 && colDiff >= 2) {
+            return hasEnemyBetween(from, to);
+        }
+        
+        return false;
+    }
+
+    private boolean hasEnemyBetween(Position from, Position to) {
+        int rowDir = (to.getRow() - from.getRow()) > 0 ? 1 : -1;
+        int colDir = (to.getCol() - from.getCol()) > 0 ? 1 : -1;
+        
+        int currentRow = from.getRow() + rowDir;
+        int currentCol = from.getCol() + colDir;
+        
+        boolean foundEnemy = false;
+        
+        while (currentRow != to.getRow() && currentCol != to.getCol()) {
+            Position current = new Position(currentRow, currentCol);
+            
+            if (!tabuleiro.isEmpty(current)) {
+                if (tabuleiro.isEnemy(from, current) && !foundEnemy) {
+                    foundEnemy = true;
+                } else {
+                    return false; // Há outra peça no caminho
+                }
+            }
+            
+            currentRow += rowDir;
+            currentCol += colDir;
+        }
+        
+        return foundEnemy;
     }
 
     private List<Node> getMovesPiece(char from) {
@@ -96,50 +185,49 @@ public class MoveManagement {
     }
 
     private void addAllMovesKing(List<Node> moves, Position pos, char from) {
-
         int[][] direction = {{1,1}, {1, -1}, {-1, 1}, {-1, -1}};
-        Position current = pos;
 
         for (int[] dir : direction) {
+            Position current = pos;
 
             while (true) {
                 current = current.getPosition(current, dir[0], dir[1]);
 
                 if (tabuleiro.isInvalidParam(current)) break;
 
-                if (!tabuleiro.isEnemy(pos, current)) break;
-
-                if (tabuleiro.isEmpty(current))
+                if (tabuleiro.isEmpty(current)) {
                     moves.add(new Node(from, translator.getCharFromPosition(current)));
-               else {
-                   Position afterEnemy = current.getPosition(current, dir[0], dir[1]);
-
-                   if (tabuleiro.isEmpty(afterEnemy))
-                       moves.add(new Node(from, translator.getCharFromPosition(afterEnemy)));
+                }
+                else if (tabuleiro.isEnemy(pos, current)) {
+                    Position afterEnemy = current.getPosition(current, dir[0], dir[1]);
+                    if (!tabuleiro.isInvalidParam(afterEnemy) && tabuleiro.isEmpty(afterEnemy))
+                        moves.add(new Node(from, translator.getCharFromPosition(afterEnemy)));
+                    break;
+                }
+                else {
+                    break;
                 }
             }
         }
     }
 
-    private List<Node> getCaptureMoves(char from, List<Node> moves) {
-        Position pos = translator.getPositionFromChar(from);
-        int direction = (tabuleiro.getType(pos) == Tabuleiro.WHITEPIECE) ? -1 : 1;
-        List<Node> captureMoves = new ArrayList<>();
-
-        for (Node move : moves) {
+    public boolean hasCaptures(List<Node> nextMoves) {
+        for (Node move : nextMoves) {
+            if (isCapture(move)) return true;
         }
-        return captureMoves;
+        return false;
     }
 
-    private List<Node> getCaptureKingMoves(char from, List<Node> moves) {
-        List<Node> captureMoves = new ArrayList<>();
-
-        for (Node move : moves) {
+    public boolean teamHasCaptures(boolean isWhite) {
+        for (int i = 0; i < tabuleiro.getTam(); i++) {
+            for (int j = 0; j < tabuleiro.getTam(); j++) {
+                Position pos = new Position(i, j);
+                if (!tabuleiro.isEmpty(pos) && tabuleiro.isWhite(pos) == isWhite) {
+                    List<Node> moves = getMoves(translator.getCharFromPosition(pos));
+                    if (hasCaptures(moves)) return true;
+                }
+            }
         }
-
-        return captureMoves;
+        return false;
     }
-
-    // TODO - Fazer uma função para pegar todos os movimentos de um determinado time
-
 }

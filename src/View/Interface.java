@@ -33,15 +33,27 @@ public final class Interface extends JFrame {
         setLayout(new GridLayout(LENGTH, LENGTH));
         for (int i = 0; i < LENGTH; i++) {
             for (int j = 0; j < LENGTH; j++) {
-
                 engine.paint(i, j);
 
                 final int row = i;
                 final int col = j;
                 add(boardInterface[i][j]);
-                boardInterface[i][j].addActionListener(_ -> engine.handleClick(row, col));
+                if (((i+j) & 1) == 1) {
+                    boardInterface[i][j].addActionListener(_ -> engine.handleClick(row, col));
+                }
             }
         }
+    }
+
+    public void declararVencedor(boolean isWhite) {
+        String vencedor = (isWhite ? "Brancos venceram" : "Pretos venceram");
+
+        JOptionPane.showMessageDialog(
+                null,
+                vencedor,
+                "Fim de jogo",
+                JOptionPane.INFORMATION_MESSAGE
+        );
     }
 
 
