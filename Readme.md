@@ -51,12 +51,12 @@ Artificial Intelligence implementation for Checkers (Draughts) on a reduced 6x6 
 ```
 src/
 ├── Main.java                    # Entry point of the application
-├── Entities/
+├── Model/
 │   ├── Tabuleiro.java           # Board representation and initialization
 │   └── CasaBotao.java           # Custom button for board squares
-├── Logic/
+├── Engine/
 │   └── LogicTabuleiro.java      # Game logic and move validation
-└── UI/
+└── View/
 ├── MainInterfaceGrafica.java # Main GUI window and event handling
 └── PaintTabuleiro.java       # Board rendering and move highlighting
 ```
@@ -65,7 +65,7 @@ src/
 
 1. Compile all Java files:
    ```bash
-   javac Main.java Entities/*.java Logic/*.java UI/*.java
+   javac Main.java Model/*.java Engine/*.java View/*.java
    ```
 
 2. Run the application:
