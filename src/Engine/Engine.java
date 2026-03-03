@@ -7,13 +7,6 @@ import Model.Tabuleiro;
 import View.PaintTabuleiro;
 
 import java.util.List;
-/*
-    TODO
-        HOTFIX
-        1- Bug na movimentação da Dama, turno infinito mesmo sem captura. A movimentação ainda conta como captura
-        2 - Uma peça não consegue capturar para trás na lógica de movimentação implementada
-        3 - Lógica de game over está bugada por causa do bug 1. Encerra o jogo mais cedo
- */
 
 public class Engine {
 
@@ -67,14 +60,13 @@ public class Engine {
             if (tabuleiro.isEmpty(clicked) || isWhiteTurn != tabuleiro.isWhite(clicked)) return;
 
             List<Node> possibleMoves = moveManagement.getMoves(translator.getCharFromPosition(clicked));
-            
-            // Verificar se alguma peça do time pode capturar
+
             if (moveManagement.teamHasCaptures(isWhiteTurn)) {
-                // Se o time tem capturas disponíveis, só permitir selecionar peças que podem capturar
                 if (possibleMoves.isEmpty() || !moveManagement.hasCaptures(possibleMoves)) return;
             }
 
             movimentos = possibleMoves;
+            print(movimentos);
             origin = clicked;
             destacarMovimentos(movimentos);
         }
@@ -163,6 +155,13 @@ public class Engine {
                 char piece = tabuleiro.getType(i, j);
                 paintTabuleiro.atualizarCasa(i, j, piece);
             }
+        }
+    }
+
+    // Debug
+    private void print(List<Node> l) {
+        for (Node node : l) {
+            System.out.println(node.getOrigin() + " " + node.getDest());
         }
     }
 }

@@ -55,23 +55,6 @@ public class MoveManagement {
         }
     }
 
-    /* =========== FUNÇÃO DE REGRA DE UMA DAMA ===========*/
-    public boolean canKingMove(Node move) {
-        Position to = translator.getPositionFromChar(move.getOrigin());
-        Position from = translator.getPositionFromChar(move.getDest());
-
-        if (!tabuleiro.isEmpty(to)) return false;
-        return tabuleiro.isDiagonal(from, to);
-    }
-
-    /* =========== FUNÇÃO DE MOVIMENTO DE UMA DAMA ===========*/
-    public void execKingMove(Node move) {
-        Position to = translator.getPositionFromChar(move.getDest());
-        Position from = translator.getPositionFromChar(move.getOrigin());
-        tabuleiro.setPos(to, tabuleiro.getPos(from));
-        tabuleiro.setPos(from, Tabuleiro.EMPTY);
-    }
-
     public List<Node> getMoves(char from) {
         Position pos = translator.getPositionFromChar(from);
         List<Node> allMoves = new ArrayList<>();
@@ -86,8 +69,10 @@ public class MoveManagement {
         for (Node move : allMoves) {
             if (isCapture(move)) {
                 captureMoves.add(move);
+                System.out.println("Detectado a captura!");
             }
         }
+
 
         // Se houver capturas disponíveis, retornar apenas elas
         return captureMoves.isEmpty() ? allMoves : captureMoves;
@@ -112,13 +97,7 @@ public class MoveManagement {
         int rowDiff = Math.abs(to.getRow() - from.getRow());
         int colDiff = Math.abs(to.getCol() - from.getCol());
         
-        // Captura simples: movimento de 2 casas na diagonal
-        if (rowDiff == 2 && colDiff == 2) {
-            return true;
-        }
-        
-        // Captura de dama: 2 ou mais casas na diagonal com inimigo no meio
-        if (tabuleiro.isDama(from) && rowDiff >= 2 && colDiff >= 2) {
+        if (rowDiff >= 2 && colDiff >= 2) {
             return hasEnemyBetween(from, to);
         }
         
@@ -167,11 +146,16 @@ public class MoveManagement {
 
         for (int col : colDirection) {
             Position newpos = pos.getPosition(pos, rowDirection, col);
+            if (tabuleiro.isInvalidParam(newpos)) continue;
+            
             if (tabuleiro.isEmpty(newpos)) {
                 move.add(new Node(from, translator.getCharFromPosition(newpos)));
             }
-            else if (tabuleiro.isEnemy(pos, newpos) && tabuleiro.isEmpty(newpos.getPosition(newpos, rowDirection, col))) {
-                move.add(new Node(from, translator.getCharFromPosition(newpos.getPosition(newpos, rowDirection, col))));
+            else if (tabuleiro.isEnemy(pos, newpos)) {
+                Position afterEnemy = newpos.getPosition(newpos, rowDirection, col);
+                if (!tabuleiro.isInvalidParam(afterEnemy) && tabuleiro.isEmpty(afterEnemy)) {
+                    move.add(new Node(from, translator.getCharFromPosition(afterEnemy)));
+                }
             }
         }
     }
@@ -189,6 +173,7 @@ public class MoveManagement {
 
         for (int[] dir : direction) {
             Position current = pos;
+            boolean foundEnemy = false;
 
             while (true) {
                 current = current.getPosition(current, dir[0], dir[1]);
@@ -198,11 +183,8 @@ public class MoveManagement {
                 if (tabuleiro.isEmpty(current)) {
                     moves.add(new Node(from, translator.getCharFromPosition(current)));
                 }
-                else if (tabuleiro.isEnemy(pos, current)) {
-                    Position afterEnemy = current.getPosition(current, dir[0], dir[1]);
-                    if (!tabuleiro.isInvalidParam(afterEnemy) && tabuleiro.isEmpty(afterEnemy))
-                        moves.add(new Node(from, translator.getCharFromPosition(afterEnemy)));
-                    break;
+                else if (tabuleiro.isEnemy(pos, current) && !foundEnemy) {
+                    foundEnemy = true;
                 }
                 else {
                     break;
@@ -229,5 +211,11 @@ public class MoveManagement {
             }
         }
         return false;
+    }
+
+    private void print(List<Node> l) {
+        for (Node node : l) {
+            System.out.println(node.getOrigin() + " " + node.getDest());
+        }
     }
 }
