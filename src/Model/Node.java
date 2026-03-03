@@ -48,8 +48,8 @@ public class Node {
         return matriz;
     }
 
-    public void setMatriz(char[][] matriz) {
-        this.matriz = matriz;
+    public void setMatriz(Tabuleiro tabuleiro) {
+       matriz = tabuleiro.getMatriz();
     }
 
     public char getOrigin() {
@@ -66,6 +66,14 @@ public class Node {
 
     public void setTurn(boolean turn) {
         this.turn = turn;
+    }
+
+    public void setMovimento(Node movimento) {
+
+    }
+
+    public void addChild(Node child) {
+        children.add(child);
     }
 
 

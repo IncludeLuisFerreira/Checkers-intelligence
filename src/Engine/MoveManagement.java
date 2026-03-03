@@ -218,4 +218,7 @@ public class MoveManagement {
             System.out.println(node.getOrigin() + " " + node.getDest());
         }
     }
+
+    // FUNÇÕES DE TESTE PARA CONSTRUIR A ÁRVORE
+
 }
