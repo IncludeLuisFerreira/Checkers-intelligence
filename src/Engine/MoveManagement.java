@@ -23,7 +23,6 @@ public class MoveManagement {
         Position to = translator.getPositionFromChar(move.getDest());
         Position from = translator.getPositionFromChar(move.getOrigin());
 
-        // Verificar se é captura e remover peça capturada
         if (isCapture(move)) {
             removeCapturedPiece(from, to);
         }
@@ -41,7 +40,6 @@ public class MoveManagement {
         int currentRow = from.getRow() + rowDir;
         int currentCol = from.getCol() + colDir;
         
-        // Percorrer diagonal até encontrar o inimigo
         while (currentRow != to.getRow() && currentCol != to.getCol()) {
             Position current = new Position(currentRow, currentCol);
             
@@ -65,16 +63,14 @@ public class MoveManagement {
         else
             allMoves.addAll(getMovesPiece(from));
 
-        // Separar movimentos de captura
         for (Node move : allMoves) {
             if (isCapture(move)) {
                 captureMoves.add(move);
-                System.out.println("Detectado a captura!");
+//                System.out.println("Detectado a captura!");
             }
         }
 
 
-        // Se houver capturas disponíveis, retornar apenas elas
         return captureMoves.isEmpty() ? allMoves : captureMoves;
     }
     
@@ -218,7 +214,18 @@ public class MoveManagement {
             System.out.println(node.getOrigin() + " " + node.getDest());
         }
     }
+    /* =========== FUNÇÕES EM FASE DE TESTE ===========*/
 
-    // FUNÇÕES DE TESTE PARA CONSTRUIR A ÁRVORE
+    // Vou tentar fazer uma nova versão do verificar capturas duplas focado para a IA, mas pode servir tb
+    // para engine caso desista do destacar movimento
+    public boolean verifyDoubleCapture(char origin) {
+        List<Node> allMoves = getMovesKing(origin);
 
+        for (Node move : allMoves) {
+            if (isCapture(move)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -18,23 +18,25 @@ public class Tree {
     }
 
     public void montarArvoreIA(Node arvore, int profundidade, Tabuleiro tabuleiro, boolean isWhiteTurn) {
-        if (profundidade == 2) return;
+        if (profundidade == 4) return;
 
         ArrayList<Node> jogadasPossiveis = retornarJogadasPossiveis(tabuleiro, isWhiteTurn);
         for (Node jogada : jogadasPossiveis) {
             Tabuleiro tabuleiroClone = tabuleiro.clone();
             MoveManagement tempMoveManagement = new MoveManagement(tabuleiroClone, translator);
             tempMoveManagement.execMove(jogada);
-            
-            Node no = new Node();
-            no.setOrigin(jogada.getOrigin());
-            no.setDest(jogada.getDest());
-            no.setMatriz(tabuleiroClone);
-            no.setMovimento(jogada);
-            no.setTurn(isWhiteTurn);
-            arvore.addChild(no);
-            
-            this.montarArvoreIA(no, profundidade + 1, tabuleiroClone, !isWhiteTurn);
+
+
+            jogada.setMatriz(tabuleiroClone);
+            jogada.setTurn(isWhiteTurn);
+            arvore.addChild(jogada);
+
+            if (tempMoveManagement.isCapture(jogada)) {
+                if (!tempMoveManagement.verifyDoubleCapture(jogada.getDest()))
+                    isWhiteTurn = !isWhiteTurn;
+            }
+
+            this.montarArvoreIA(jogada, profundidade + 1, tabuleiroClone, !isWhiteTurn);
         }
 
 

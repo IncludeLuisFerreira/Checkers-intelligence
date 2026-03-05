@@ -12,7 +12,6 @@ package Model;
 public class Tabuleiro implements Cloneable {
 
     private char[][] matriz;
-    private final boolean[][] canEat;
     private final int TAMANHO = 6;
 
     public static final char EMPTY = '0';
@@ -23,7 +22,6 @@ public class Tabuleiro implements Cloneable {
 
     public Tabuleiro() {
         this.matriz = new char[TAMANHO][TAMANHO];
-        this.canEat = new boolean[TAMANHO][TAMANHO];
         inicializar();
     }
 
@@ -43,7 +41,6 @@ public class Tabuleiro implements Cloneable {
                 else {
                     matriz[i][j] = '0';
                 }
-                canEat[i][j] = false;
             }
         }
     }
@@ -58,14 +55,6 @@ public class Tabuleiro implements Cloneable {
     }
 
     /*======================= GETTERS AND SETTERS =======================*/
-
-    public boolean getCanEat(int i, int j) {
-        return canEat[i][j];
-    }
-
-    public void setCanEat(int i, int j, boolean canEat) {
-        this.canEat[i][j] = canEat;
-    }
 
     @Override
     public Tabuleiro clone() {

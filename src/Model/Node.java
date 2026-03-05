@@ -68,11 +68,9 @@ public class Node {
         this.turn = turn;
     }
 
-    public void setMovimento(Node movimento) {
-
-    }
-
     public void addChild(Node child) {
+        if (this.children == null)
+            this.children = new ArrayList<>();
         children.add(child);
     }
 
