@@ -34,14 +34,14 @@ public class Tabuleiro implements Cloneable {
                     if (i < 2) {
                         matriz[i][j] = BLACKPIECE; // Pretas
                     } else if (i > 3) {
-                        matriz[i][j] = WHITEPIECE; // Brancas
+                        matriz[i][j] = EMPTY; // Brancas vazias para teste
                     }
                     else {
                         matriz[i][j] = EMPTY;
                     }
                 }
                 else {
-                    matriz[i][j] = '0';
+                    matriz[i][j] = EMPTY;
                 }
                 canEat[i][j] = false;
             }

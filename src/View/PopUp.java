@@ -14,6 +14,8 @@ public class PopUp {
             "https://youtu.be/dzf6G69OV-A?si=DaDBOMqDY-Eo6BWb"
     };
 
+    private int clicked = 0;
+
 
     public PopUp() {
         int choice = setPopUp();
@@ -23,7 +25,7 @@ public class PopUp {
     private int setPopUp() {
         return JOptionPane.showOptionDialog(
                 null,
-                "Receba uma peça extra assinstindo uma propaganda do IF",
+                "Receba uma peça extra assistindo uma propaganda do IF",
                 "Message",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
@@ -39,10 +41,12 @@ public class PopUp {
             case 0 : {
                 System.out.println("Escolha 0");
                 playVideo(videos[aleatorio.nextInt(videos.length)]);
+                clicked = 1;
                 break;
             }
             case 1 : {
                 System.out.println("Escolha 1");
+                clicked = 0;
                 System.exit(0);
             }
         }
@@ -57,6 +61,10 @@ public class PopUp {
                 e.printStackTrace();
             }
         }
+    }
+
+    public int getClicked() {
+        return clicked;
     }
 
     public static void main(String[] args) {
