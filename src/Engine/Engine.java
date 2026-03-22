@@ -5,6 +5,7 @@ import Model.Node;
 import Model.Position;
 import Model.Tabuleiro;
 import View.PaintTabuleiro;
+import View.PopUp;
 
 import java.util.List;
 
@@ -20,12 +21,13 @@ public class Engine {
 
     private List<Node> movimentos = null;
     private final int TAM;
-    private int countWhite = 6;
+    private int countWhite = 1;
     private int countBlack = 6;
 
     boolean gameOver = false;
     boolean mustCaptured = false;
     boolean isWhiteTurn = true;
+    boolean popupShown = false;
     
     private GameOverListener gameOverListener;
 
@@ -48,6 +50,10 @@ public class Engine {
             if (gameOverListener != null) {
                 gameOverListener.onGameOver(countWhite > 0);
             }
+        }
+        else if (countWhite == 1 && !popupShown) {
+            ganharPecaGratis();
+            popupShown = true;
         }
 
         if (gameOver)
@@ -163,5 +169,24 @@ public class Engine {
         for (Node node : l) {
             System.out.println(node.getOrigin() + " " + node.getDest());
         }
+    }
+
+    // Isso não entra no projeto de entrega
+    private void ganharPecaGratis() {
+        PopUp popup = new PopUp();
+
+        if (popup.getClicked() == 1) {
+            boolean added = false;
+                for (int col = 0; col < TAM && !added; col++) {
+                    if ((5 + col) % 2 != 0 && tabuleiro.isEmpty(new Position(5, col))) {
+                        tabuleiro.setPos(new Position(5, col), Tabuleiro.WHITEPIECE);
+                        countWhite++;
+                        added = true;
+                    }
+                }
+
+            sincronizarView();
+        }
+
     }
 }
