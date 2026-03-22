@@ -47,7 +47,6 @@ public class PopUp {
             case 1 : {
                 System.out.println("Escolha 1");
                 clicked = 0;
-                System.exit(0);
             }
         }
     }

@@ -21,7 +21,7 @@ public class Engine {
 
     private List<Node> movimentos = null;
     private final int TAM;
-    private int countWhite = 1;
+    private int countWhite = 6;
     private int countBlack = 6;
 
     boolean gameOver = false;
