@@ -12,16 +12,20 @@ import Engine.Translator;
 public class Tree {
 
     private final Translator translator;
+    private final int MAXHEIGHT = 10;
+    private int childrenCount = 0;
 
     public Tree(int TAM_TABULEIRO) {
         this.translator = new Translator(TAM_TABULEIRO);
     }
 
     public void montarArvoreIA(Node arvore, int profundidade, Tabuleiro tabuleiro, boolean isWhiteTurn) {
-        if (profundidade == 4) return;
-
         ArrayList<Node> jogadasPossiveis = retornarJogadasPossiveis(tabuleiro, isWhiteTurn);
+
+        if (profundidade == 12 || jogadasPossiveis.isEmpty()) return;
+
         for (Node jogada : jogadasPossiveis) {
+            childrenCount++;
             Tabuleiro tabuleiroClone = tabuleiro.clone();
             MoveManagement tempMoveManagement = new MoveManagement(tabuleiroClone, translator);
             tempMoveManagement.execMove(jogada);
@@ -31,12 +35,15 @@ public class Tree {
             jogada.setTurn(isWhiteTurn);
             arvore.addChild(jogada);
 
-            if (tempMoveManagement.isCapture(jogada)) {
-                if (!tempMoveManagement.verifyDoubleCapture(jogada.getDest()))
-                    isWhiteTurn = !isWhiteTurn;
-            }
+           boolean nextTurn;
+           if (tempMoveManagement.isCapture(jogada) &&
+               tempMoveManagement.verifyDoubleCapture(jogada.getDest())) {
+               nextTurn = isWhiteTurn;
+           }
+           else
+               nextTurn = !isWhiteTurn;
 
-            this.montarArvoreIA(jogada, profundidade + 1, tabuleiroClone, !isWhiteTurn);
+            this.montarArvoreIA(jogada, profundidade + 1, tabuleiroClone, nextTurn);
         }
 
 
@@ -44,6 +51,7 @@ public class Tree {
 
     public ArrayList<Node> retornarJogadasPossiveis(Tabuleiro tabuleiro, boolean isWhiteTurn) {
         ArrayList<Node> jogadasPossiveis = new ArrayList<>();
+        ArrayList<Node> capturas = new ArrayList<>();
         MoveManagement tempMoveManagement = new MoveManagement(tabuleiro, translator);
 
         for (int i = 0; i < tabuleiro.getTam(); i++) {
@@ -56,15 +64,29 @@ public class Tree {
                 }
             }
         }
-        return jogadasPossiveis;
+
+        for (Node jogada : jogadasPossiveis) {
+            if (tempMoveManagement.isCapture(jogada))
+                capturas.add(jogada);
+        }
+
+        return capturas.isEmpty() ? jogadasPossiveis : capturas;
+    }
+
+    public void p() {
+        System.out.println(childrenCount);
     }
 
 
 
     public static void main(String[] args) {
+        long startTime = System.currentTimeMillis();
         Tree tree = new Tree(6);
         Node root = new Node();
         tree.montarArvoreIA(root, 0, new Tabuleiro(), true);
+        tree.p();
+        long endTime = System.currentTimeMillis();
+        System.out.println("Tempo: " + (endTime - startTime) / 1000 + "s");
     }
 
 }

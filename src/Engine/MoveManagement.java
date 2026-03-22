@@ -223,7 +223,7 @@ public class MoveManagement {
     // Vou tentar fazer uma nova versão do verificar capturas duplas focado para a IA, mas pode servir tb
     // para engine caso desista do destacar movimento
     public boolean verifyDoubleCapture(char origin) {
-        List<Node> allMoves = getMovesKing(origin);
+        List<Node> allMoves = getAllMovesForPiece(origin);
 
         for (Node move : allMoves) {
             if (isCapture(move)) {
