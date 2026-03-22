@@ -176,7 +176,11 @@ public class MoveManagement {
 
                 if (tabuleiro.isInvalidParam(current)) break;
 
-                if (tabuleiro.isEmpty(current)) {
+                if (tabuleiro.isEmpty(current) && foundEnemy) {
+                    moves.add(new Node(from, translator.getCharFromPosition(current)));
+                    break;
+                }
+                else if (tabuleiro.isEmpty(current)) {
                     moves.add(new Node(from, translator.getCharFromPosition(current)));
                 }
                 else if (tabuleiro.isEnemy(pos, current) && !foundEnemy) {
