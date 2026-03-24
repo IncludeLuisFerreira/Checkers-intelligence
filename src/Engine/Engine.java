@@ -72,7 +72,7 @@ public class Engine {
             }
 
             movimentos = possibleMoves;
-            print(movimentos);
+            //print(movimentos);
             origin = clicked;
             destacarMovimentos(movimentos);
         }
@@ -146,7 +146,7 @@ public class Engine {
 
     private boolean isDoubleClick(Position clicked) {
         if (tabuleiro.isEmpty(clicked)) return false;
-        return clicked.getRow() == origin.getRow();
+       return clicked.equals(origin);
     }
 
 
