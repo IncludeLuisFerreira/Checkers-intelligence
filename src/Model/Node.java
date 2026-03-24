@@ -18,6 +18,7 @@ public class Node {
     public Node(char origin, char dest) {
         this.origin = origin;
         this.dest = dest;
+        this.children = new ArrayList<>();
     }
 
     public char getDest() {

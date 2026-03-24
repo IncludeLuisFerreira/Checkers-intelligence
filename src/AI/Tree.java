@@ -12,7 +12,7 @@ import Engine.Translator;
 public class Tree {
 
     private final Translator translator;
-    private final int MAXHEIGHT = 10;
+    private final int MAXHEIGHT = 12;       // Máximo que consegui no meu computador (8s: 3.207.202 filhos)
     private int childrenCount = 0;
 
     public Tree(int TAM_TABULEIRO) {
@@ -22,7 +22,7 @@ public class Tree {
     public void montarArvoreIA(Node arvore, int profundidade, Tabuleiro tabuleiro, boolean isWhiteTurn) {
         ArrayList<Node> jogadasPossiveis = retornarJogadasPossiveis(tabuleiro, isWhiteTurn);
 
-        if (profundidade == 12 || jogadasPossiveis.isEmpty()) return;
+        if (profundidade == MAXHEIGHT || jogadasPossiveis.isEmpty()) return;
 
         for (Node jogada : jogadasPossiveis) {
             childrenCount++;
@@ -30,6 +30,7 @@ public class Tree {
             MoveManagement tempMoveManagement = new MoveManagement(tabuleiroClone, translator);
             tempMoveManagement.execMove(jogada);
 
+            // Fazer as podas
 
             jogada.setMatriz(tabuleiroClone);
             jogada.setTurn(isWhiteTurn);
