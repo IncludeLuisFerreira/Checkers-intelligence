@@ -1,13 +1,18 @@
 package AI.Evaluation;
 
 import Model.Node;
+import Model.Tabuleiro;
 
 import java.util.ArrayList;
 
 public abstract class MinMaxEvaluation {
 
+
+    public MinMaxEvaluation() {
+    }
+
     // Função abstrata para a implementação de múltiplas heurísticas
-    public abstract int Evaluation(Node node);
+    public abstract int Evaluation(Node node, Tabuleiro tabuleiro);
 
     // E se eu conseguir organizar o arraylist por tamanho de minMax? Min no index 0 e Max no index size-1
     public int Minimo(ArrayList<Node> children) {
