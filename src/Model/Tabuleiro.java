@@ -13,6 +13,8 @@ public class Tabuleiro implements Cloneable {
 
     private char[][] matriz;
     private final int TAMANHO = 6;
+    private int white = 6;
+    private int black = 6;
 
     public static final char EMPTY = '0';
     public static final char WHITEPIECE = '1';
@@ -145,5 +147,24 @@ public class Tabuleiro implements Cloneable {
     public boolean isWhite(Position pos) {
         if (isInvalidParam(pos)) return false;
         return "13".contains(String.valueOf(matriz[pos.getRow()][pos.getCol()]));
+    }
+
+    public void capture(boolean isWhiteTurn) {
+        if (isWhiteTurn && black > 0)
+            black--;
+        else if (!isWhiteTurn && white > 0)
+            white--;
+    }
+
+    public boolean isOver() {
+        return black == 0 || white == 0;
+    }
+
+    public int getWhiteCount() {
+        return white;
+    }
+
+    public void incrementWhite() {
+        white++;
     }
 }

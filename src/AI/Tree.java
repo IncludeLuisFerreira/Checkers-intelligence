@@ -3,6 +3,8 @@ package AI;
 import java.util.ArrayList;
 import java.util.List;
 
+import AI.Evaluation.MinMaxEvaluation;
+import AI.Evaluation.MorePiecesEvaluation;
 import Model.Node;
 import Model.Position;
 import Model.Tabuleiro;
@@ -12,17 +14,19 @@ import Engine.Translator;
 public class Tree {
 
     private final Translator translator;
+    private final MinMaxEvaluation minMax;
     private final int MAXHEIGHT = 12;       // Máximo que consegui no meu computador (8s: 3.207.202 filhos)
     private int childrenCount = 0;
 
-    public Tree(int TAM_TABULEIRO) {
+    public Tree(int TAM_TABULEIRO, MinMaxEvaluation eval) {
         this.translator = new Translator(TAM_TABULEIRO);
+        this.minMax = eval;
     }
 
     public void montarArvoreIA(Node arvore, int profundidade, Tabuleiro tabuleiro, boolean isWhiteTurn) {
         ArrayList<Node> jogadasPossiveis = retornarJogadasPossiveis(tabuleiro, isWhiteTurn);
 
-        if (profundidade == MAXHEIGHT || jogadasPossiveis.isEmpty()) return;
+        if (profundidade == 5 || jogadasPossiveis.isEmpty()) return;
 
         for (Node jogada : jogadasPossiveis) {
             childrenCount++;
@@ -55,9 +59,13 @@ public class Tree {
         ArrayList<Node> capturas = new ArrayList<>();
         MoveManagement tempMoveManagement = new MoveManagement(tabuleiro, translator);
 
+        if (tabuleiro.isOver())
+            return jogadasPossiveis;
+
         for (int i = 0; i < tabuleiro.getTam(); i++) {
             for (int j = 0; j < tabuleiro.getTam(); j++) {
 
+                // Acho que tá errado, a função não ve quando o time oposto está vazio
                 if (!tabuleiro.isEmpty(new Position(i, j)) && tabuleiro.isWhite(new Position(i, j)) == isWhiteTurn)  {
                     jogadasPossiveis.addAll(tempMoveManagement.getMoves(
                             translator.getCharFromPosition(new Position(i, j))
@@ -79,15 +87,39 @@ public class Tree {
     }
 
 
+    public Node BestMove(Node root) {
+        if (root.getChildren().isEmpty()) return null;
+
+        Node move = root.getChildren().getFirst();
+        int value = move.getMinMax();
+
+        for (Node child : root.getChildren()) {
+            if (value < child.getMinMax()) {
+                move = child;
+                value = child.getMinMax();
+            }
+        }
+
+        return move;
+    }
+
+
 
     public static void main(String[] args) {
+        MorePiecesEvaluation morePieces = new MorePiecesEvaluation();
+        MinMax minMax = new MinMax(morePieces);
         long startTime = System.currentTimeMillis();
-        Tree tree = new Tree(6);
+
+        Tree tree = new Tree(6, morePieces);
         Node root = new Node();
         tree.montarArvoreIA(root, 0, new Tabuleiro(), true);
         tree.p();
+
         long endTime = System.currentTimeMillis();
+
         System.out.println("Tempo: " + (endTime - startTime) / 1000 + "s");
+        minMax.MinMaxCheckersGame(root, new Tabuleiro());
+
     }
 
 }

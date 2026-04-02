@@ -1,5 +1,9 @@
 package Engine;
 
+import AI.Evaluation.MinMaxEvaluation;
+import AI.Evaluation.MorePiecesEvaluation;
+import AI.MinMax;
+import AI.Tree;
 import View.CasaBotao;
 import Model.Node;
 import Model.Position;
@@ -7,7 +11,12 @@ import Model.Tabuleiro;
 import View.PaintTabuleiro;
 import View.PopUp;
 
+import javax.swing.*;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Engine {
 
@@ -21,8 +30,6 @@ public class Engine {
 
     private List<Node> movimentos = null;
     private final int TAM;
-    private int countWhite = 6;
-    private int countBlack = 6;
 
     boolean gameOver = false;
     boolean mustCaptured = false;
@@ -31,6 +38,12 @@ public class Engine {
     
     private GameOverListener gameOverListener;
 
+    // Raiz da árvore do conhecimento da IA
+    private Node root;
+    private Tree tree;
+    MinMaxEvaluation evaluation = new MorePiecesEvaluation();
+
+
     public Engine(Tabuleiro tabuleiro, CasaBotao[][] boardInterface) {
         this.tabuleiro = tabuleiro;
         this.TAM = tabuleiro.getTam();
@@ -38,6 +51,8 @@ public class Engine {
         this.translator = new Translator(TAM);
         this.moveManagement = new MoveManagement(tabuleiro, translator);
         this.paintTabuleiro = new PaintTabuleiro(tabuleiro,boardInterface, translator);
+
+        tree = new Tree(tabuleiro.getTam(), evaluation);
     }
     
     public void setGameOverListener(GameOverListener listener) {
@@ -45,13 +60,13 @@ public class Engine {
     }
 
     public void handleClick(int i, int j) {
-        if (turnManagement.isGameOver(countWhite, countBlack)) {
+        if (tabuleiro.isOver()) {
             gameOver = true;
             if (gameOverListener != null) {
-                gameOverListener.onGameOver(countWhite > 0);
+                gameOverListener.onGameOver(tabuleiro.getWhiteCount() > 0);
             }
         }
-        else if (countWhite == 1 && !popupShown) {
+        else if (tabuleiro.getWhiteCount() == 1 && !popupShown) {
             ganharPecaGratis();
             popupShown = true;
         }
@@ -60,6 +75,7 @@ public class Engine {
             return;
 
         isWhiteTurn = turnManagement.whoseTurn();
+
         Position clicked = new Position(i, j);
 
         if (origin.getRow() == -1) {
@@ -72,7 +88,6 @@ public class Engine {
             }
 
             movimentos = possibleMoves;
-            //print(movimentos);
             origin = clicked;
             destacarMovimentos(movimentos);
         }
@@ -93,10 +108,7 @@ public class Engine {
                 boolean wasCapture = moveManagement.isCapture(move);
                 
                 if (wasCapture) {
-                    if (isWhiteTurn)
-                        countBlack--;
-                    else
-                        countWhite--;
+                   tabuleiro.capture(isWhiteTurn);
                 }
                 
                 moveManagement.execMove(move);
@@ -108,6 +120,12 @@ public class Engine {
 
                 origin.setPosition(-1,-1);
                 turnManagement.changeTurn();
+                
+                // Após jogada do jogador, IA joga
+                SwingUtilities.invokeLater(() -> {
+                    montarArvoreIA();
+                    executarMelhorJogada();
+                });
             }
         }
     }
@@ -180,7 +198,7 @@ public class Engine {
                 for (int col = 0; col < TAM && !added; col++) {
                     if ((5 + col) % 2 != 0 && tabuleiro.isEmpty(new Position(5, col))) {
                         tabuleiro.setPos(new Position(5, col), Tabuleiro.WHITEPIECE);
-                        countWhite++;
+                        tabuleiro.incrementWhite();
                         added = true;
                     }
                 }
@@ -188,5 +206,40 @@ public class Engine {
             sincronizarView();
         }
 
+    }
+
+    private void montarArvoreIA() {
+        Tree tree = new Tree(tabuleiro.getTam(), evaluation);
+        root = new Node();
+        tree.montarArvoreIA(root, 0, tabuleiro, false);
+
+        MinMax minMax = new MinMax(evaluation);
+        minMax.MinMaxCheckersGame(root, tabuleiro);
+
+
+    }
+
+    private void executarMelhorJogada() {
+        // Obter melhor jogada
+        Node bestMove = tree.BestMove(root);
+
+        if (bestMove != null) {
+            SwingUtilities.invokeLater(() -> {
+                boolean wasCapture = moveManagement.isCapture(bestMove);
+
+                if (wasCapture) {
+                    tabuleiro.capture(false);
+                }
+
+                moveManagement.execMove(bestMove);
+                sincronizarView();
+
+                Position destPos = translator.getPositionFromChar(bestMove.getDest());
+                if (!(wasCapture && verificarSePodeCapturar(destPos))) {
+                    turnManagement.changeTurn();
+                }
+
+            });
+        }
     }
 }

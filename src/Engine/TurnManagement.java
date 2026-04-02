@@ -18,8 +18,4 @@ public class TurnManagement {
     public void changeTurn() {
         turn = !turn;
     }
-
-    public boolean isGameOver(int whitePieces, int blackPieces) {
-        return whitePieces == 0 || blackPieces == 0;
-    }
 }
