@@ -75,6 +75,14 @@ public class Node {
         children.add(child);
     }
 
+    public void clear() {
+        if (children != null) {
+            children.clear();
+        }
+        matriz = null;
+        minMax = 0;
+    }
+
 
     @Override
     public boolean equals(Object o) {

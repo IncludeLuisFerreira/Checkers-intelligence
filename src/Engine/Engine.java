@@ -1,5 +1,6 @@
 package Engine;
 
+import AI.AI;
 import AI.Evaluation.MinMaxEvaluation;
 import AI.Evaluation.MorePiecesEvaluation;
 import AI.MinMax;
@@ -40,9 +41,8 @@ public class Engine {
 
     // Raiz da árvore do conhecimento da IA
     private Node root;
-    private Tree tree;
-    MinMaxEvaluation evaluation = new MorePiecesEvaluation();
-
+    private AI ai;
+    private MinMaxEvaluation evaluation;
 
     public Engine(Tabuleiro tabuleiro, CasaBotao[][] boardInterface) {
         this.tabuleiro = tabuleiro;
@@ -51,8 +51,8 @@ public class Engine {
         this.translator = new Translator(TAM);
         this.moveManagement = new MoveManagement(tabuleiro, translator);
         this.paintTabuleiro = new PaintTabuleiro(tabuleiro,boardInterface, translator);
-
-        tree = new Tree(tabuleiro.getTam(), evaluation);
+        this.evaluation = new MorePiecesEvaluation();
+        this.ai = new AI(tabuleiro, evaluation);
     }
     
     public void setGameOverListener(GameOverListener listener) {
@@ -123,7 +123,7 @@ public class Engine {
                 
                 // Após jogada do jogador, IA joga
                 SwingUtilities.invokeLater(() -> {
-                    montarArvoreIA();
+                    ai.montarArvore(false);     //  Joga pelas pretas
                     executarMelhorJogada();
                 });
             }
@@ -208,20 +208,10 @@ public class Engine {
 
     }
 
-    private void montarArvoreIA() {
-        Tree tree = new Tree(tabuleiro.getTam(), evaluation);
-        root = new Node();
-        tree.montarArvoreIA(root, 0, tabuleiro, false);
-
-        MinMax minMax = new MinMax(evaluation);
-        minMax.MinMaxCheckersGame(root, tabuleiro);
-
-
-    }
 
     private void executarMelhorJogada() {
         // Obter melhor jogada
-        Node bestMove = tree.BestMove(root);
+        Node bestMove = ai.getBestMove();
 
         if (bestMove != null) {
             SwingUtilities.invokeLater(() -> {

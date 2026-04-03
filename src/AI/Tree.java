@@ -14,13 +14,11 @@ import Engine.Translator;
 public class Tree {
 
     private final Translator translator;
-    private final MinMaxEvaluation minMax;
     private final int MAXHEIGHT = 12;       // Máximo que consegui no meu computador (8s: 3.207.202 filhos)
     private int childrenCount = 0;
 
-    public Tree(int TAM_TABULEIRO, MinMaxEvaluation eval) {
+    public Tree(int TAM_TABULEIRO) {
         this.translator = new Translator(TAM_TABULEIRO);
-        this.minMax = eval;
     }
 
     public void montarArvoreIA(Node arvore, int profundidade, Tabuleiro tabuleiro, boolean isWhiteTurn) {
@@ -86,7 +84,7 @@ public class Tree {
         System.out.println(childrenCount);
     }
 
-
+    // Escolhe o nó com maior pontuação
     public Node BestMove(Node root) {
         if (root.getChildren().isEmpty()) return null;
 
@@ -105,21 +103,21 @@ public class Tree {
 
 
 
-    public static void main(String[] args) {
-        MorePiecesEvaluation morePieces = new MorePiecesEvaluation();
-        MinMax minMax = new MinMax(morePieces);
-        long startTime = System.currentTimeMillis();
-
-        Tree tree = new Tree(6, morePieces);
-        Node root = new Node();
-        tree.montarArvoreIA(root, 0, new Tabuleiro(), true);
-        tree.p();
-
-        long endTime = System.currentTimeMillis();
-
-        System.out.println("Tempo: " + (endTime - startTime) / 1000 + "s");
-        minMax.MinMaxCheckersGame(root, new Tabuleiro());
-
-    }
+//    public static void main(String[] args) {
+//        MorePiecesEvaluation morePieces = new MorePiecesEvaluation();
+//        MinMax minMax = new MinMax(morePieces);
+//        long startTime = System.currentTimeMillis();
+//
+//        Tree tree = new Tree(6, morePieces);
+//        Node root = new Node();
+//        tree.montarArvoreIA(root, 0, new Tabuleiro(), true);
+//        tree.p();
+//
+//        long endTime = System.currentTimeMillis();
+//
+//        System.out.println("Tempo: " + (endTime - startTime) / 1000 + "s");
+//        minMax.MinMaxCheckersGame(root, new Tabuleiro());
+//
+//    }
 
 }
