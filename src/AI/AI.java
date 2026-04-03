@@ -26,6 +26,6 @@ public class AI {
     }
 
     public Node getBestMove() {
-        return tree.BestMove(root);
+        return tree.RandomMove(root);
     }
 }

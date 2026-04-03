@@ -2,6 +2,7 @@ package AI;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import AI.Evaluation.MinMaxEvaluation;
 import AI.Evaluation.MorePiecesEvaluation;
@@ -99,6 +100,13 @@ public class Tree {
         }
 
         return move;
+    }
+
+    public Node RandomMove(Node root) {
+        Random random = new Random();
+        int randomNumber = random.nextInt(root.getChildren().size());
+
+        return root.getChildren().get(randomNumber);
     }
 
 
