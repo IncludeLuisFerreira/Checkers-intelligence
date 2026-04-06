@@ -18,12 +18,13 @@ public class MoveManagement {
         this.promotionManagement = new PromotionManagement(tabuleiro);
     }
 
-    /* =========== FUNÇÃO DE MOVIMENTO DE UMA PEÇA SIMPLES ===========*/
-    public void execMove(Node move) {
+    /* =========== FUNÇÃO DE MOVIMENTO DE UMA PEÇA ===========*/
+    public void execMove(Node move, boolean isWhiteTurn) {
         Position to = translator.getPositionFromChar(move.getDest());
         Position from = translator.getPositionFromChar(move.getOrigin());
 
         if (isCapture(move)) {
+            tabuleiro.capture(isWhiteTurn);     // Faz a contagem das pecas
             removeCapturedPiece(from, to);
         }
 

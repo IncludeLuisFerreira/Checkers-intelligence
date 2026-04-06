@@ -13,12 +13,14 @@ public class Node {
 
     public Node() {
         this.children = new ArrayList<>();
+        this.minMax = Integer.MIN_VALUE;
     }
 
     public Node(char origin, char dest) {
         this.origin = origin;
         this.dest = dest;
         this.children = new ArrayList<>();
+        this.minMax = Integer.MIN_VALUE;
     }
 
     public char getDest() {
@@ -80,7 +82,7 @@ public class Node {
             children.clear();
         }
         matriz = null;
-        minMax = 0;
+        minMax = Integer.MIN_VALUE;
     }
 
 

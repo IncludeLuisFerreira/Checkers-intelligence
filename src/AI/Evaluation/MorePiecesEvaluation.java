@@ -7,6 +7,7 @@ import Model.Tabuleiro;
 public class MorePiecesEvaluation extends MinMaxEvaluation {
 
 
+    // Eu clono o tabuleiro que ja vem com a contagem de pecas, como eu melhoro essa funcao?
     @Override
     public int Evaluation(Node node, Tabuleiro tabuleiro) {
         int whiteCount = 0;
@@ -14,12 +15,19 @@ public class MorePiecesEvaluation extends MinMaxEvaluation {
 
         for (int i = 0; i < tabuleiro.getTam(); i++) {
             for (int j = 0; j < tabuleiro.getTam(); j++) {
+                int sum = 10;
                 Position pos = new Position(i, j);
 
                 if ( tabuleiro.isEmpty(pos)) continue;
 
-                if (tabuleiro.isWhite(pos)) whiteCount++;
-                else blackCount++;
+                if (tabuleiro.isDama(pos)) sum = 50;
+
+                if (tabuleiro.isWhite(pos))  {
+                    whiteCount += sum;
+                }
+                else  {
+                    blackCount += sum;
+                }
             }
         }
 

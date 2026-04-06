@@ -22,10 +22,10 @@ public class AI {
     public void montarArvore(boolean isWhite) {
         root.clear();
         tree.montarArvoreIA(root, 0,  tabuleiro, isWhite);
-        minMax.MinMaxCheckersGame(root, tabuleiro);
+        minMax.MinMaxCheckersGame(root);
     }
 
     public Node getBestMove() {
-        return tree.RandomMove(root);
+        return tree.BestMove(root);
     }
 }

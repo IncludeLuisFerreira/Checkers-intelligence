@@ -13,8 +13,8 @@ public class Tabuleiro implements Cloneable {
 
     private char[][] matriz;
     private final int TAMANHO = 6;
-    private int white = 6;
-    private int black = 6;
+    private short white = 6;
+    private short black = 6;
 
     public static final char EMPTY = '0';
     public static final char WHITEPIECE = '1';
@@ -66,6 +66,8 @@ public class Tabuleiro implements Cloneable {
             for (int i = 0; i < TAMANHO; i++) {
                 clone.matriz[i] = this.matriz[i].clone();
             }
+            clone.black = this.black;
+            clone.white = this.white;
             return clone;
         } catch (CloneNotSupportedException e) {
             return null;

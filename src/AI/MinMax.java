@@ -13,15 +13,16 @@ public class MinMax {
         this.evaluator = minMaxEvaluation;
     }
 
-    public void MinMaxCheckersGame(Node root, Tabuleiro tabuleiro) {
+    public void MinMaxCheckersGame(Node root) {
         if (root.getChildren().isEmpty()) {
+            Tabuleiro tabuleiro = new Tabuleiro();
+            tabuleiro.setMatriz(root.getMatriz());
             root.setMinMax(evaluator.Evaluation(root, tabuleiro));
         }
         else {
-            for (int i = 0; i < root.getChildren().size(); i++) {
-                Node child = root.getChildren().get(i);
+            for (Node child : root.getChildren()) {
                 if (child.getMinMax() == Integer.MIN_VALUE) {
-                    MinMaxCheckersGame(child, tabuleiro);
+                    MinMaxCheckersGame(child);
                 }
             }
 

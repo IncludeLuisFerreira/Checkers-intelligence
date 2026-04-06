@@ -106,18 +106,20 @@ public class Engine {
             if (isValidMove(move)) {
                 cancelarDestaque(movimentos);
                 boolean wasCapture = moveManagement.isCapture(move);
+
+//                if (wasCapture) {
+//                   tabuleiro.capture(isWhiteTurn);
+//                }
                 
-                if (wasCapture) {
-                   tabuleiro.capture(isWhiteTurn);
-                }
-                
-                moveManagement.execMove(move);
+                moveManagement.execMove(move, isWhiteTurn);
                 sincronizarView();
 
+                // Verifica dupla captura impedindo de mudar de turno
                 if (wasCapture && verificarSePodeCapturar(clicked)) {
                     return;
                 }
 
+                // Mudança de turno
                 origin.setPosition(-1,-1);
                 turnManagement.changeTurn();
                 
@@ -210,25 +212,24 @@ public class Engine {
 
 
     private void executarMelhorJogada() {
-        // Obter melhor jogada
         Node bestMove = ai.getBestMove();
-
         if (bestMove != null) {
             SwingUtilities.invokeLater(() -> {
                 boolean wasCapture = moveManagement.isCapture(bestMove);
-
-                if (wasCapture) {
-                    tabuleiro.capture(false);
-                }
-
-                moveManagement.execMove(bestMove);
+                moveManagement.execMove(bestMove, false);
                 sincronizarView();
-
-                Position destPos = translator.getPositionFromChar(bestMove.getDest());
-                if (!(wasCapture && verificarSePodeCapturar(destPos))) {
+                
+                if (wasCapture && moveManagement.verifyDoubleCapture(bestMove.getDest())) {
+                    try {
+                        Thread.sleep(300);  // Tempo para ver as capturas múltiplas
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    ai.montarArvore(false);
+                    executarMelhorJogada();
+                } else {
                     turnManagement.changeTurn();
                 }
-
             });
         }
     }

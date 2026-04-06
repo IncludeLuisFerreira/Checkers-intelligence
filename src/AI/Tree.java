@@ -25,13 +25,13 @@ public class Tree {
     public void montarArvoreIA(Node arvore, int profundidade, Tabuleiro tabuleiro, boolean isWhiteTurn) {
         ArrayList<Node> jogadasPossiveis = retornarJogadasPossiveis(tabuleiro, isWhiteTurn);
 
-        if (profundidade == 5 || jogadasPossiveis.isEmpty()) return;
+        if (profundidade == 6 || jogadasPossiveis.isEmpty()) return;
 
         for (Node jogada : jogadasPossiveis) {
-            childrenCount++;
+            childrenCount++;        // Apenas para logs
             Tabuleiro tabuleiroClone = tabuleiro.clone();
             MoveManagement tempMoveManagement = new MoveManagement(tabuleiroClone, translator);
-            tempMoveManagement.execMove(jogada);
+            tempMoveManagement.execMove(jogada, isWhiteTurn);
 
             // Fazer as podas
 
