@@ -16,6 +16,7 @@ public class Tree {
 
     private final Translator translator;
     private final int MAXHEIGHT = 12;       // Máximo que consegui no meu computador (8s: 3.207.202 filhos)
+    private final int AVAREGEHEIGHT = 10;
     private int childrenCount = 0;
 
     public Tree(int TAM_TABULEIRO) {
@@ -25,7 +26,7 @@ public class Tree {
     public void montarArvoreIA(Node arvore, int profundidade, Tabuleiro tabuleiro, boolean isWhiteTurn) {
         ArrayList<Node> jogadasPossiveis = retornarJogadasPossiveis(tabuleiro, isWhiteTurn);
 
-        if (profundidade == 6 || jogadasPossiveis.isEmpty()) return;
+        if (profundidade == AVAREGEHEIGHT || jogadasPossiveis.isEmpty()) return;
 
         for (Node jogada : jogadasPossiveis) {
             childrenCount++;        // Apenas para logs

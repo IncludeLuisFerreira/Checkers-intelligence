@@ -1,3 +1,28 @@
+<div align="center"> 
+
+```
+██╗  ██╗ █████╗ ████████╗██╗
+██║  ██║██╔══██╗╚══██╔══╝██║
+███████║███████║   ██║   ██║
+██╔══██║██╔══██║   ██║   ██║
+██║  ██║██║  ██║   ██║   ██║
+╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ╚═╝
+```
+
+
+<img src="img/HATI_.png" alt="HATI Logo" width="400"/>
+
+### 🤖 **HATI - Checkers AI Engine**
+**Version 1.0** | *Smarter, Faster, Stronger*
+
+[![Status](https://img.shields.io/badge/status-active-success.svg)]()
+[![Version](https://img.shields.io/badge/version-1.0-blue.svg)]()
+[![AI](https://img.shields.io/badge/AI-MinMax-orange.svg)]()
+
+</div>
+
+---
+
 # Checkers Intelligence
 
 > A Java-based Checkers (Draughts) game on a 6×6 board with an AI engine built for an Artificial Intelligence course — featuring game tree construction (Minimax-ready), full move validation, king promotion, mandatory capture rules, and a Swing GUI.
