@@ -13,6 +13,7 @@ import View.PaintTabuleiro;
 import View.PopUp;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
@@ -71,6 +72,13 @@ public class Engine {
             popupShown = true;
         }
 
+        // Verificação se o jogador tem pelo menos um movimento
+        if (!verificarSeTemJogadas()) {
+            gameOver = true;
+            gameOverListener.onGameOver(false);
+            return;
+        }
+
         if (gameOver)
             return;
 
@@ -82,6 +90,7 @@ public class Engine {
             if (tabuleiro.isEmpty(clicked) || isWhiteTurn != tabuleiro.isWhite(clicked)) return;
 
             List<Node> possibleMoves = moveManagement.getMoves(translator.getCharFromPosition(clicked));
+
 
             if (moveManagement.teamHasCaptures(isWhiteTurn)) {
                 if (possibleMoves.isEmpty() || !moveManagement.hasCaptures(possibleMoves)) return;
@@ -232,5 +241,32 @@ public class Engine {
                 }
             });
         }
+        // Sem jogadas, a IA perde!
+        else {
+            gameOver = true;
+            if (gameOverListener != null) {
+                gameOverListener.onGameOver(true);
+            }
+        }
+    }
+
+
+    private boolean verificarSeTemJogadas() {
+        ArrayList<Node> jogadasPossiveis = new ArrayList<>();
+
+        for (int i = 0; i < tabuleiro.getTam(); i++) {
+            for (int j = 0; j < tabuleiro.getTam(); j++) {
+
+                if (!tabuleiro.isEmpty(new Position(i, j)) && tabuleiro.isWhite(new Position(i, j)))  {
+                    jogadasPossiveis.addAll(moveManagement.getMoves(
+                            translator.getCharFromPosition(new Position(i, j))
+                    ));
+
+                    if (!jogadasPossiveis.isEmpty()) return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

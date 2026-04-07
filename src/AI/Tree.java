@@ -82,7 +82,7 @@ public class Tree {
         return capturas.isEmpty() ? jogadasPossiveis : capturas;
     }
 
-    public void p() {
+    public void print() {
         System.out.println(childrenCount);
     }
 
