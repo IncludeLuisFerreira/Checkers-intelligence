@@ -10,7 +10,7 @@
 ```
 
 
-<img src="img/HATI_.png" alt="HATI Logo" width="400"/>
+<img src="img/HATI_escolhido.png" alt="HATI Logo" width="1380"/>
 
 ### 🤖 **HATI - Checkers AI Engine**
 **Version 1.0** | *Smarter, Faster, Stronger*

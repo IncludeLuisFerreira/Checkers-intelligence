@@ -26,7 +26,7 @@ public class Tree {
     public void montarArvoreIA(Node arvore, int profundidade, Tabuleiro tabuleiro, boolean isWhiteTurn) {
         ArrayList<Node> jogadasPossiveis = retornarJogadasPossiveis(tabuleiro, isWhiteTurn);
 
-        if (profundidade == AVAREGEHEIGHT || jogadasPossiveis.isEmpty()) return;
+        if (profundidade == 10 || jogadasPossiveis.isEmpty()) return;
 
         for (Node jogada : jogadasPossiveis) {
             childrenCount++;        // Apenas para logs
