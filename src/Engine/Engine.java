@@ -2,6 +2,7 @@ package Engine;
 
 import AI.AI;
 import AI.Evaluation.Evaluation;
+import AI.Evaluation.PositionalEvaluation;
 import AI.Evaluation.QuantityEvaluation;
 import View.CasaBotao;
 import Model.Node;
@@ -46,7 +47,7 @@ public class Engine {
         this.translator = new Translator(TAM);
         this.moveManagement = new MoveManagement(tabuleiro, translator);
         this.paintTabuleiro = new PaintTabuleiro(tabuleiro,boardInterface, translator);
-        this.evaluation = new QuantityEvaluation();
+        this.evaluation = new PositionalEvaluation(translator);
         this.ai = new AI(tabuleiro, evaluation);
     }
     
