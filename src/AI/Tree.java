@@ -1,11 +1,10 @@
 package AI;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
-import AI.Evaluation.MinMaxEvaluation;
-import AI.Evaluation.MorePiecesEvaluation;
+import AI.Evaluation.Evaluation;
+import AI.Evaluation.QuantityEvaluation;
 import Model.Node;
 import Model.Position;
 import Model.Tabuleiro;
@@ -21,9 +20,9 @@ public class Tree {
     private final int height;
     private final Translator translator;
     private int childrenCount = 0;
-    private final MinMaxEvaluation evaluator;
+    private final Evaluation evaluator;
 
-    public Tree(int TAM_TABULEIRO, MinMaxEvaluation evaluator, int HEIGHT) {
+    public Tree(int TAM_TABULEIRO, Evaluation evaluator, int HEIGHT) {
         this.translator = new Translator(TAM_TABULEIRO);
         this.evaluator = evaluator;
         this.height = HEIGHT;
@@ -37,7 +36,7 @@ public class Tree {
         ArrayList<Node> jogadasPossiveis = retornarJogadasPossiveis(tabuleiro, isWhiteTurn);
 
         if (profundidade == height || jogadasPossiveis.isEmpty()) {
-            int score = evaluator.Evaluation(arvore, tabuleiro);
+            int score = evaluator.avaliation(tabuleiro);
             arvore.setMinMax(score);
             return score;
         }
@@ -160,7 +159,7 @@ public class Tree {
 
 
     public static void main(String[] args) {
-        MorePiecesEvaluation morePieces = new MorePiecesEvaluation();
+        Evaluation morePieces = new QuantityEvaluation();
         MinMax minMax = new MinMax(morePieces);
         long startTime = System.currentTimeMillis();
         int INFINITO = Integer.MAX_VALUE;

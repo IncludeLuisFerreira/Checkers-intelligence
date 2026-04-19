@@ -233,4 +233,25 @@ public class MoveManagement {
         }
         return false;
     }
+
+    // Adição para a nova heurística
+    public Position findCapturedPosition(Position from, Position to) {
+        int rowDir = (to.getRow() - from.getRow()) > 0 ? 1 : -1;
+        int colDir = (to.getCol() - from.getCol()) > 0 ? 1 : -1;
+
+        int currentRow = from.getRow() + rowDir;
+        int currentCol = from.getCol() + colDir;
+
+        while (currentRow != to.getRow() && currentCol != to.getCol()) {
+            Position current = new Position(currentRow, currentCol);
+
+            if (!tabuleiro.isEmpty(current) && tabuleiro.isEnemy(from, current)) {
+                return current;
+            }
+
+            currentRow += rowDir;
+            currentCol += colDir;
+        }
+        return null; // não deveria ocorrer se isCapture() retornou true
+    }
 }

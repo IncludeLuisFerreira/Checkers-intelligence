@@ -1,15 +1,15 @@
 package AI;
 
-import AI.Evaluation.MinMaxEvaluation;
+import AI.Evaluation.Evaluation;
 import Model.Node;
 import Model.Tabuleiro;
 
 // Classe de implementação do MinMax
 public class MinMax {
 
-    private final MinMaxEvaluation evaluator;
+    private final Evaluation evaluator;
 
-    public MinMax(MinMaxEvaluation minMaxEvaluation) {
+    public MinMax(Evaluation minMaxEvaluation) {
         this.evaluator = minMaxEvaluation;
     }
 
@@ -17,7 +17,7 @@ public class MinMax {
         if (root.getChildren().isEmpty()) {
             Tabuleiro tabuleiro = new Tabuleiro();
             tabuleiro.setMatriz(root.getMatriz());
-            root.setMinMax(evaluator.Evaluation(root, tabuleiro));
+            root.setMinMax(evaluator.avaliation(tabuleiro));
         }
         else {
             for (Node child : root.getChildren()) {

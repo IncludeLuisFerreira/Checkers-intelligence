@@ -1,7 +1,7 @@
 package AI;
 
 
-import AI.Evaluation.MinMaxEvaluation;
+import AI.Evaluation.Evaluation;
 import Model.Node;
 import Model.Tabuleiro;
 
@@ -11,7 +11,7 @@ public class AI {
     private Node root;
     private Tabuleiro tabuleiro;
 
-    public AI(Tabuleiro tabuleiro, MinMaxEvaluation evaluation) {
+    public AI(Tabuleiro tabuleiro, Evaluation evaluation) {
         this.tabuleiro = tabuleiro;
         tree  = new Tree(tabuleiro.getTam(), evaluation, Tree.AVAREGEHEIGHT);
         root = new Node();

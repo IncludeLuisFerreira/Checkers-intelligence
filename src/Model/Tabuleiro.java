@@ -169,4 +169,20 @@ public class Tabuleiro implements Cloneable {
     public void incrementWhite() {
         white++;
     }
+
+
+
+    // NA CLASSE Tabuleiro.java
+    public void carregarConfiguracao(char[][] novaMatriz) {
+        this.white = 0;
+        this.black = 0;
+        for (int i = 0; i < TAMANHO; i++) {
+            for (int j = 0; j < TAMANHO; j++) {
+                this.matriz[i][j] = novaMatriz[i][j];
+                char c = novaMatriz[i][j];
+                if (c == WHITEPIECE || c == WHITEKING) white++;
+                else if (c == BLACKPIECE || c == BLACKKING) black++;
+            }
+        }
+    }
 }

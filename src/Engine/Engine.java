@@ -1,10 +1,8 @@
 package Engine;
 
 import AI.AI;
-import AI.Evaluation.MinMaxEvaluation;
-import AI.Evaluation.MorePiecesEvaluation;
-import AI.MinMax;
-import AI.Tree;
+import AI.Evaluation.Evaluation;
+import AI.Evaluation.QuantityEvaluation;
 import View.CasaBotao;
 import Model.Node;
 import Model.Position;
@@ -15,10 +13,6 @@ import View.PopUp;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class Engine {
 
@@ -43,7 +37,7 @@ public class Engine {
     // Raiz da árvore do conhecimento da IA
     private Node root;
     private AI ai;
-    private MinMaxEvaluation evaluation;
+    private Evaluation evaluation;
 
     public Engine(Tabuleiro tabuleiro, CasaBotao[][] boardInterface) {
         this.tabuleiro = tabuleiro;
@@ -52,7 +46,7 @@ public class Engine {
         this.translator = new Translator(TAM);
         this.moveManagement = new MoveManagement(tabuleiro, translator);
         this.paintTabuleiro = new PaintTabuleiro(tabuleiro,boardInterface, translator);
-        this.evaluation = new MorePiecesEvaluation();
+        this.evaluation = new QuantityEvaluation();
         this.ai = new AI(tabuleiro, evaluation);
     }
     

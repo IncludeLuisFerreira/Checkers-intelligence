@@ -5,14 +5,14 @@ import Model.Tabuleiro;
 
 import java.util.ArrayList;
 
-public abstract class MinMaxEvaluation {
+public abstract class Evaluation {
 
 
-    public MinMaxEvaluation() {
+    public Evaluation() {
+
     }
 
-    // Função abstrata para a implementação de múltiplas heurísticas
-    public abstract int Evaluation(Node node, Tabuleiro tabuleiro);
+    public abstract int avaliation(Tabuleiro tabuleiro);
 
     // E se eu conseguir organizar o arraylist por tamanho de minMax? Min no index 0 e Max no index size-1
     public int Minimo(ArrayList<Node> children) {

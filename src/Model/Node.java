@@ -100,4 +100,9 @@ public class Node {
         result = 31 * result + Integer.hashCode(dest);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return getOrigin() + " " + getDest();
+    }
 }

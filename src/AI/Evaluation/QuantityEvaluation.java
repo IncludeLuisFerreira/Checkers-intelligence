@@ -1,26 +1,26 @@
 package AI.Evaluation;
 
-import Model.Node;
 import Model.Position;
 import Model.Tabuleiro;
 
-public class MorePiecesEvaluation extends MinMaxEvaluation {
+public class QuantityEvaluation extends Evaluation {
 
+    private final int SIMPLES_PIECES = 10;
+    private final int KING = 50;
 
-    // Eu clono o tabuleiro que ja vem com a contagem de pecas, como eu melhoro essa funcao?
     @Override
-    public int Evaluation(Node node, Tabuleiro tabuleiro) {
+    public int avaliation(Tabuleiro tabuleiro) {
         int whiteCount = 0;
         int blackCount = 0;
 
         for (int i = 0; i < tabuleiro.getTam(); i++) {
             for (int j = 0; j < tabuleiro.getTam(); j++) {
-                int sum = 10;
+                int sum = SIMPLES_PIECES;
                 Position pos = new Position(i, j);
 
                 if ( tabuleiro.isEmpty(pos)) continue;
 
-                if (tabuleiro.isDama(pos)) sum = 50;
+                if (tabuleiro.isDama(pos)) sum = KING;
 
                 if (tabuleiro.isWhite(pos))  {
                     whiteCount += sum;
@@ -34,5 +34,4 @@ public class MorePiecesEvaluation extends MinMaxEvaluation {
         // Max value = 6; Min value = -6
         return blackCount - whiteCount;
     }
-
 }
