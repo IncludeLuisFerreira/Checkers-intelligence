@@ -15,43 +15,73 @@ import Engine.Translator;
 public class Tree {
 
     private final Translator translator;
-    private final int MAXHEIGHT = 12;       // Máximo que consegui no meu computador (8s: 3.207.202 filhos)
-    private final int AVAREGEHEIGHT = 10;
+    private final int MAXHEIGHT = 16;       // Máximo que consegui no meu computador (8s: 3.207.202 filhos)
+    private final int AVAREGEHEIGHT = 12;
     private int childrenCount = 0;
+    private final MinMaxEvaluation evaluator;
 
-    public Tree(int TAM_TABULEIRO) {
+    public Tree(int TAM_TABULEIRO, MinMaxEvaluation evaluator) {
         this.translator = new Translator(TAM_TABULEIRO);
+        this.evaluator = evaluator;
     }
 
-    public void montarArvoreIA(Node arvore, int profundidade, Tabuleiro tabuleiro, boolean isWhiteTurn) {
+    /**
+      Montagem da árvore otimizada com podas alfa e beta
+     */
+    public int montarArvoreIA(Node arvore, int profundidade, Tabuleiro tabuleiro,
+                               boolean isWhiteTurn, int alpha, int beta) {
         ArrayList<Node> jogadasPossiveis = retornarJogadasPossiveis(tabuleiro, isWhiteTurn);
 
-        if (profundidade == 10 || jogadasPossiveis.isEmpty()) return;
+        if (profundidade == MAXHEIGHT || jogadasPossiveis.isEmpty()) {
+            int score = evaluator.Evaluation(arvore, tabuleiro);
+            arvore.setMinMax(score);
+            return score;
+        }
+
+        boolean isMaximizing = !isWhiteTurn;
+        int bestValue = isMaximizing ? Integer.MIN_VALUE : Integer.MAX_VALUE;
 
         for (Node jogada : jogadasPossiveis) {
-            childrenCount++;        // Apenas para logs
+            childrenCount++;
+
             Tabuleiro tabuleiroClone = tabuleiro.clone();
             MoveManagement tempMoveManagement = new MoveManagement(tabuleiroClone, translator);
             tempMoveManagement.execMove(jogada, isWhiteTurn);
 
-            // Fazer as podas
+            boolean nextTurn = false;
 
-            jogada.setMatriz(tabuleiroClone);
-            jogada.setTurn(isWhiteTurn);
-            arvore.addChild(jogada);
+            // Se NAO for captura e captura multipla ele troca de turn
+            if (!(tempMoveManagement.isCapture(jogada) &&
+                tempMoveManagement.verifyDoubleCapture(jogada.getDest()))) {
+                nextTurn = !isWhiteTurn;
+            }
 
-           boolean nextTurn;
-           if (tempMoveManagement.isCapture(jogada) &&
-               tempMoveManagement.verifyDoubleCapture(jogada.getDest())) {
-               nextTurn = isWhiteTurn;
-           }
-           else
-               nextTurn = !isWhiteTurn;
+            if (profundidade == 0) {
+                jogada.setMatriz(tabuleiroClone);
+                jogada.setTurn(isWhiteTurn);
+                arvore.addChild(jogada);
+            }
 
-            this.montarArvoreIA(jogada, profundidade + 1, tabuleiroClone, nextTurn);
+            int childValue = montarArvoreIA (
+                    jogada, profundidade + 1, tabuleiroClone,
+                    nextTurn, alpha, beta
+            );
+            jogada.setMinMax(childValue);
+
+            if (isMaximizing) {
+                if (childValue > bestValue) bestValue = childValue;
+                if (bestValue > alpha) alpha = bestValue;
+            } else {
+                if (childValue < bestValue) bestValue = childValue;
+                if (bestValue < beta) beta = bestValue;
+            }
+
+            if (beta <= alpha)
+                break;
         }
 
-
+        arvore.setMinMax(bestValue);
+        return bestValue;
     }
 
     public ArrayList<Node> retornarJogadasPossiveis(Tabuleiro tabuleiro, boolean isWhiteTurn) {
@@ -112,21 +142,22 @@ public class Tree {
 
 
 
-//    public static void main(String[] args) {
-//        MorePiecesEvaluation morePieces = new MorePiecesEvaluation();
-//        MinMax minMax = new MinMax(morePieces);
-//        long startTime = System.currentTimeMillis();
-//
-//        Tree tree = new Tree(6, morePieces);
-//        Node root = new Node();
-//        tree.montarArvoreIA(root, 0, new Tabuleiro(), true);
-//        tree.p();
-//
-//        long endTime = System.currentTimeMillis();
-//
-//        System.out.println("Tempo: " + (endTime - startTime) / 1000 + "s");
-//        minMax.MinMaxCheckersGame(root, new Tabuleiro());
-//
-//    }
+    public static void main(String[] args) {
+        MorePiecesEvaluation morePieces = new MorePiecesEvaluation();
+        MinMax minMax = new MinMax(morePieces);
+        long startTime = System.currentTimeMillis();
+
+        int INFINITO = Integer.MAX_VALUE;
+
+        Tree tree = new Tree(6, morePieces);
+        Node root = new Node();
+        tree.montarArvoreIA(root, 0, new Tabuleiro(), true, -INFINITO, INFINITO);
+
+        long endTime = System.currentTimeMillis();
+
+        System.out.println("Tempo: " + (endTime - startTime) / 1000 + "s");
+        tree.print();
+
+    }
 
 }
