@@ -13,7 +13,7 @@ public class AI {
 
     public AI(Tabuleiro tabuleiro, MinMaxEvaluation evaluation) {
         this.tabuleiro = tabuleiro;
-        tree  = new Tree(tabuleiro.getTam(), evaluation);
+        tree  = new Tree(tabuleiro.getTam(), evaluation, Tree.AVAREGEHEIGHT);
         root = new Node();
     }
 

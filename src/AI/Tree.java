@@ -14,15 +14,19 @@ import Engine.Translator;
 
 public class Tree {
 
+    public static final int MAXHEIGHT = 18;       // No final da partida fica muito demorado
+    public static final int AVAREGEHEIGHT = 14;
+
+
+    private final int height;
     private final Translator translator;
-    private final int MAXHEIGHT = 16;       // Máximo que consegui no meu computador (8s: 3.207.202 filhos)
-    private final int AVAREGEHEIGHT = 12;
     private int childrenCount = 0;
     private final MinMaxEvaluation evaluator;
 
-    public Tree(int TAM_TABULEIRO, MinMaxEvaluation evaluator) {
+    public Tree(int TAM_TABULEIRO, MinMaxEvaluation evaluator, int HEIGHT) {
         this.translator = new Translator(TAM_TABULEIRO);
         this.evaluator = evaluator;
+        this.height = HEIGHT;
     }
 
     /**
@@ -32,7 +36,7 @@ public class Tree {
                                boolean isWhiteTurn, int alpha, int beta) {
         ArrayList<Node> jogadasPossiveis = retornarJogadasPossiveis(tabuleiro, isWhiteTurn);
 
-        if (profundidade == MAXHEIGHT || jogadasPossiveis.isEmpty()) {
+        if (profundidade == height || jogadasPossiveis.isEmpty()) {
             int score = evaluator.Evaluation(arvore, tabuleiro);
             arvore.setMinMax(score);
             return score;
@@ -56,6 +60,8 @@ public class Tree {
                 nextTurn = !isWhiteTurn;
             }
 
+            // So preciso armazenar as jogadas do primeiro nivel para a IA executar
+            // Pode otimizar fazendo retornar a jogada?
             if (profundidade == 0) {
                 jogada.setMatriz(tabuleiroClone);
                 jogada.setTurn(isWhiteTurn);
@@ -84,6 +90,14 @@ public class Tree {
         return bestValue;
     }
 
+    /** Função que verifica todas as jogadas possíveis de um determinado time em um determinado contexto de
+     * tabuleiro. Em caso de capturas, a função retorna uma lista que apresenta apenas capturas. <b>Regra de captura
+     * obrigatória </b>
+     *
+     * @param tabuleiro um clone do tabuleiro
+     * @param isWhiteTurn True se é turno das brancas; false se e turno das pretas
+     * @return ArrayList de possíveis jogadas
+     */
     public ArrayList<Node> retornarJogadasPossiveis(Tabuleiro tabuleiro, boolean isWhiteTurn) {
         ArrayList<Node> jogadasPossiveis = new ArrayList<>();
         ArrayList<Node> capturas = new ArrayList<>();
@@ -95,7 +109,8 @@ public class Tree {
         for (int i = 0; i < tabuleiro.getTam(); i++) {
             for (int j = 0; j < tabuleiro.getTam(); j++) {
 
-                // Acho que tá errado, a função não ve quando o time oposto está vazio
+                // pensando aqui, mesmo que eu achei uma captura, essa funcao vai explorar todas as jogadas.
+                // Nao sei se faz muita diferenca, mas pode melhorar o processamento
                 if (!tabuleiro.isEmpty(new Position(i, j)) && tabuleiro.isWhite(new Position(i, j)) == isWhiteTurn)  {
                     jogadasPossiveis.addAll(tempMoveManagement.getMoves(
                             translator.getCharFromPosition(new Position(i, j))
@@ -116,7 +131,7 @@ public class Tree {
         System.out.println(childrenCount);
     }
 
-    // Escolhe o nó com maior pontuação
+    // Escolhe o nó com maior pontuação, será provavelmente integrado ao montar arvore
     public Node BestMove(Node root) {
         if (root.getChildren().isEmpty()) return null;
 
@@ -133,31 +148,48 @@ public class Tree {
         return move;
     }
 
-    public Node RandomMove(Node root) {
-        Random random = new Random();
-        int randomNumber = random.nextInt(root.getChildren().size());
+    // Pega as jogadas possíveis e escolhe um de forma aleatória
+    public Node RandomMove(Node root, Tabuleiro tabuleiro, boolean isWhiteTurn) {
+        ArrayList<Node> jogadas = retornarJogadasPossiveis(tabuleiro,isWhiteTurn);
 
-        return root.getChildren().get(randomNumber);
+        Random random = new Random(System.nanoTime());
+        int index = random.nextInt(jogadas.size());
+
+        return jogadas.get(index);
     }
-
 
 
     public static void main(String[] args) {
         MorePiecesEvaluation morePieces = new MorePiecesEvaluation();
         MinMax minMax = new MinMax(morePieces);
         long startTime = System.currentTimeMillis();
-
         int INFINITO = Integer.MAX_VALUE;
 
-        Tree tree = new Tree(6, morePieces);
+        Tree tree = new Tree(6, morePieces, 16);
         Node root = new Node();
+
         tree.montarArvoreIA(root, 0, new Tabuleiro(), true, -INFINITO, INFINITO);
+        System.out.println("Melhor movimento: " + tree.BestMove(root).toString());
 
         long endTime = System.currentTimeMillis();
 
-        System.out.println("Tempo: " + (endTime - startTime) / 1000 + "s");
+
+        System.out.println("Tempo: " + (endTime - startTime) + "ms");
         tree.print();
 
+
+        // Teste de tempo do RandomMove
+
+        startTime = System.currentTimeMillis();
+
+        root.clear();
+        root = tree.RandomMove(root, new Tabuleiro(), true);
+
+        endTime = System.currentTimeMillis();
+
+        System.out.println("Melhor movimento: " + root.toString());
+        System.out.println("Tempo: " + (endTime - startTime)  + "ms");
+        root.clear();
     }
 
 }
