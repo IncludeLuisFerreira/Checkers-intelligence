@@ -1,5 +1,6 @@
 package View;
 
+import AI.LevelAI;
 import Engine.Engine;
 
 import javax.imageio.ImageIO;
@@ -13,16 +14,19 @@ public final class Interface extends JFrame {
     private final int LENGTH = 6;
     private CasaBotao[][] boardInterface;
     private Engine engine;
+    private final LevelAI level;// ← novo: guardado para repassar ao GameOverView
 
+    Runnable onRestart;
 
-    public Interface(CasaBotao[][] botoes, Engine engine) {
-        boardInterface = botoes;
+    public Interface(CasaBotao[][] botoes, Engine engine, LevelAI level, Runnable onRestart) {  // ← level entra aqui
+        this.boardInterface = botoes;
         this.engine = engine;
+        this.level  = level;
+        this.onRestart = onRestart;
 
         setInterface();
         montarLayout(boardInterface);
         setVisible(true);
-
     }
 
     private void setInterface() {
@@ -55,16 +59,14 @@ public final class Interface extends JFrame {
     }
 
     public void declararVencedor(boolean isWhite) {
-        String vencedor = (isWhite ? "Brancos venceram" : "Pretos venceram");
-
-        JOptionPane.showMessageDialog(
-                null,
-                vencedor,
-                "Fim de jogo",
-                JOptionPane.INFORMATION_MESSAGE
+        GameOverView tela = new GameOverView(
+                isWhite,
+                level,
+                () -> {                          // callback "Jogar Novamente"
+                    dispose();                   // fecha a janela atual
+                   onRestart.run();
+                }
         );
+        tela.exibir();
     }
-
-
-
 }

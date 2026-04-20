@@ -90,7 +90,7 @@ public class PaintTabuleiro {
         this.tabuleiro = tabuleiro;
         this.translator = translator;
 
-        System.out.println(level);
+//        System.out.println(level);
 
         switch (level) {
             case EASY: {

@@ -54,24 +54,7 @@ public class Engine {
     }
 
     public void handleClick(int i, int j) {
-        if (tabuleiro.isOver()) {
-            gameOver = true;
-            if (gameOverListener != null) {
-                gameOverListener.onGameOver(tabuleiro.getWhiteCount() > 0);
-            }
-        }
-        else if (tabuleiro.getWhiteCount() == 1 && !popupShown) {
-            ganharPecaGratis();
-            popupShown = true;
-        }
-
-        // Verificação se o jogador tem pelo menos um movimento
-        if (!verificarSeTemJogadas()) {
-            gameOver = true;
-            gameOverListener.onGameOver(false);
-            return;
-        }
-
+        checkGameOver();
         if (gameOver)
             return;
 
@@ -115,6 +98,7 @@ public class Engine {
                 
                 moveManagement.execMove(move, isWhiteTurn);
                 sincronizarView();
+                checkGameOver();
 
                 // Verifica dupla captura impedindo de mudar de turno
                 if (wasCapture && verificarSePodeCapturar(clicked)) {
@@ -131,13 +115,36 @@ public class Engine {
                     if (level != LevelAI.DEFAULT) {
                         ai.montarArvore(false);     //  Joga pelas pretas
                         executarMelhorJogada();
+                        checkGameOver();
                     }
                     else {
                         executarRandomMove();
+                        checkGameOver();
                     }
-
                 });
+                checkGameOver();
             }
+       // checkGameOver();
+        }
+        //checkGameOver();
+    }
+
+    private void checkGameOver() {
+        if (tabuleiro.isOver()) {
+            gameOver = true;
+            if (gameOverListener != null) {
+                gameOverListener.onGameOver(tabuleiro.getWhiteCount() > 0);
+            }
+        }
+        else if (tabuleiro.getWhiteCount() == 1 && !popupShown) {
+            ganharPecaGratis();
+            popupShown = true;
+        }
+
+        // Verificação se o jogador tem pelo menos um movimento
+        if (!verificarSeTemJogadas()) {
+            gameOver = true;
+            gameOverListener.onGameOver(false);
         }
     }
 
