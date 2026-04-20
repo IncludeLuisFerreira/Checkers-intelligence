@@ -2,8 +2,11 @@ package View;
 
 import Engine.Engine;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 
 public final class Interface extends JFrame {
 
@@ -27,6 +30,12 @@ public final class Interface extends JFrame {
         setSize(800, 800);
         setLayout(new GridLayout(LENGTH, LENGTH));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        try {
+            setIconImage(ImageIO.read(new File("img/icone_desktop.png")));
+        } catch (IOException e) {
+            System.err.println("Interface: ícone não encontrado — " + e.getMessage());
+        }
     }
 
     private void montarLayout(CasaBotao[][] boardInterface) {
