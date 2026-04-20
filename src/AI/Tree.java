@@ -148,8 +148,10 @@ public class Tree {
     }
 
     // Pega as jogadas possíveis e escolhe um de forma aleatória
-    public Node RandomMove(Node root, Tabuleiro tabuleiro, boolean isWhiteTurn) {
+    public Node RandomMove(Tabuleiro tabuleiro, boolean isWhiteTurn) {
         ArrayList<Node> jogadas = retornarJogadasPossiveis(tabuleiro,isWhiteTurn);
+
+        if (jogadas.isEmpty()) return null;     // Evitar erro ao terminar a partida
 
         Random random = new Random(System.nanoTime());
         int index = random.nextInt(jogadas.size());
@@ -182,7 +184,7 @@ public class Tree {
         startTime = System.currentTimeMillis();
 
         root.clear();
-        root = tree.RandomMove(root, new Tabuleiro(), true);
+        root = tree.RandomMove(new Tabuleiro(), true);
 
         endTime = System.currentTimeMillis();
 

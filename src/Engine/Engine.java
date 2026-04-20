@@ -2,8 +2,7 @@ package Engine;
 
 import AI.AI;
 import AI.Evaluation.Evaluation;
-import AI.Evaluation.PositionalEvaluation;
-import AI.Evaluation.QuantityEvaluation;
+import AI.LevelAI;
 import View.CasaBotao;
 import Model.Node;
 import Model.Position;
@@ -29,7 +28,6 @@ public class Engine {
     private final int TAM;
 
     boolean gameOver = false;
-    boolean mustCaptured = false;
     boolean isWhiteTurn = true;
     boolean popupShown = false;
     
@@ -38,17 +36,17 @@ public class Engine {
     // Raiz da árvore do conhecimento da IA
     private Node root;
     private AI ai;
-    private Evaluation evaluation;
+    private LevelAI level;
 
-    public Engine(Tabuleiro tabuleiro, CasaBotao[][] boardInterface) {
+    public Engine(Tabuleiro tabuleiro, CasaBotao[][] boardInterface, LevelAI level) {
+        this.level = level;
         this.tabuleiro = tabuleiro;
         this.TAM = tabuleiro.getTam();
         this.turnManagement = new TurnManagement();
         this.translator = new Translator(TAM);
         this.moveManagement = new MoveManagement(tabuleiro, translator);
-        this.paintTabuleiro = new PaintTabuleiro(tabuleiro,boardInterface, translator);
-        this.evaluation = new PositionalEvaluation(translator);
-        this.ai = new AI(tabuleiro, evaluation);
+        this.paintTabuleiro = new PaintTabuleiro(tabuleiro,boardInterface, translator, level);
+        this.ai = new AI(tabuleiro, translator, level);
     }
     
     public void setGameOverListener(GameOverListener listener) {
@@ -129,8 +127,15 @@ public class Engine {
                 
                 // Após jogada do jogador, IA joga
                 SwingUtilities.invokeLater(() -> {
-                    ai.montarArvore(false);     //  Joga pelas pretas
-                    executarMelhorJogada();
+
+                    if (level != LevelAI.DEFAULT) {
+                        ai.montarArvore(false);     //  Joga pelas pretas
+                        executarMelhorJogada();
+                    }
+                    else {
+                        executarRandomMove();
+                    }
+
                 });
             }
         }
@@ -243,6 +248,35 @@ public class Engine {
                 gameOverListener.onGameOver(true);
             }
         }
+    }
+
+    private void executarRandomMove() {
+        Node jogada =  ai.getRandomMove(false);
+
+        if (jogada == null) {
+                gameOver = true;
+            if (gameOverListener != null) {
+                gameOverListener.onGameOver(true);
+            }
+        }
+
+        boolean wasCapture = moveManagement.isCapture(jogada);
+        moveManagement.execMove(jogada, false);
+        sincronizarView();
+
+        if (wasCapture && moveManagement.verifyDoubleCapture(jogada.getDest())) {
+            try {
+                Thread.sleep(300);  // Tempo para ver as capturas múltiplas
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            executarRandomMove();
+        }
+        else {
+            turnManagement.changeTurn();
+        }
+
+
     }
 
 
