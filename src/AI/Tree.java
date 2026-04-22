@@ -148,8 +148,10 @@ public class Tree {
     }
 
     // Pega as jogadas possíveis e escolhe um de forma aleatória
-    public Node RandomMove(Node root, Tabuleiro tabuleiro, boolean isWhiteTurn) {
+    public Node RandomMove(Tabuleiro tabuleiro, boolean isWhiteTurn) {
         ArrayList<Node> jogadas = retornarJogadasPossiveis(tabuleiro,isWhiteTurn);
+
+        if (jogadas.isEmpty()) return null;     // Evitar erro ao terminar a partida
 
         Random random = new Random(System.nanoTime());
         int index = random.nextInt(jogadas.size());
@@ -158,37 +160,37 @@ public class Tree {
     }
 
 
-    public static void main(String[] args) {
-        Evaluation morePieces = new QuantityEvaluation();
-        MinMax minMax = new MinMax(morePieces);
-        long startTime = System.currentTimeMillis();
-        int INFINITO = Integer.MAX_VALUE;
-
-        Tree tree = new Tree(6, morePieces, 16);
-        Node root = new Node();
-
-        tree.montarArvoreIA(root, 0, new Tabuleiro(), true, -INFINITO, INFINITO);
-        System.out.println("Melhor movimento: " + tree.BestMove(root).toString());
-
-        long endTime = System.currentTimeMillis();
-
-
-        System.out.println("Tempo: " + (endTime - startTime) + "ms");
-        tree.print();
-
-
-        // Teste de tempo do RandomMove
-
-        startTime = System.currentTimeMillis();
-
-        root.clear();
-        root = tree.RandomMove(root, new Tabuleiro(), true);
-
-        endTime = System.currentTimeMillis();
-
-        System.out.println("Melhor movimento: " + root.toString());
-        System.out.println("Tempo: " + (endTime - startTime)  + "ms");
-        root.clear();
-    }
+//    public static void main(String[] args) {
+//        Evaluation morePieces = new QuantityEvaluation();
+//        MinMax minMax = new MinMax(morePieces);
+//        long startTime = System.currentTimeMillis();
+//        int INFINITO = Integer.MAX_VALUE;
+//
+//        Tree tree = new Tree(6, morePieces, 16);
+//        Node root = new Node();
+//
+//        tree.montarArvoreIA(root, 0, new Tabuleiro(), true, -INFINITO, INFINITO);
+//        System.out.println("Melhor movimento: " + tree.BestMove(root).toString());
+//
+//        long endTime = System.currentTimeMillis();
+//
+//
+//        System.out.println("Tempo: " + (endTime - startTime) + "ms");
+//        tree.print();
+//
+//
+//        // Teste de tempo do RandomMove
+//
+//        startTime = System.currentTimeMillis();
+//
+//        root.clear();
+//        root = tree.RandomMove(new Tabuleiro(), true);
+//
+//        endTime = System.currentTimeMillis();
+//
+//        System.out.println("Melhor movimento: " + root.toString());
+//        System.out.println("Tempo: " + (endTime - startTime)  + "ms");
+//        root.clear();
+//    }
 
 }

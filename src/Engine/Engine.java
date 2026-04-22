@@ -1,15 +1,13 @@
 package Engine;
 
 import AI.AI;
-import AI.Evaluation.Evaluation;
-import AI.Evaluation.PositionalEvaluation;
-import AI.Evaluation.QuantityEvaluation;
+import AI.LevelAI;
+import AI.TrainingConfig;
 import View.CasaBotao;
 import Model.Node;
 import Model.Position;
 import Model.Tabuleiro;
 import View.PaintTabuleiro;
-import View.PopUp;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -17,137 +15,250 @@ import java.util.List;
 
 public class Engine {
 
-    private final Tabuleiro tabuleiro;
-    private final MoveManagement moveManagement;
-    private final TurnManagement turnManagement;
-    private final PaintTabuleiro paintTabuleiro;
-    private final Translator translator;
+    private final Tabuleiro       tabuleiro;
+    private final MoveManagement  moveManagement;
+    private final TurnManagement  turnManagement;
+    private final PaintTabuleiro  paintTabuleiro;
+    private final Translator      translator;
+    private final AI              ai;
+    private final LevelAI         level;
+    private final int             TAM;
+
+    /**
+     * true  = jogador usa peças brancas (padrão).
+     * false = jogador usa peças pretas. IA inicia como brancas.
+     */
+    private final boolean playerIsWhite;
+
+    /** Cor da IA (sempre o oposto do jogador). */
+    private final boolean iaIsWhite;
 
     Position origin = new Position(-1, -1);
 
     private List<Node> movimentos = null;
-    private final int TAM;
-
-    boolean gameOver = false;
-    boolean mustCaptured = false;
+    boolean gameOver    = false;
     boolean isWhiteTurn = true;
-    boolean popupShown = false;
-    
+
     private GameOverListener gameOverListener;
 
-    // Raiz da árvore do conhecimento da IA
-    private Node root;
-    private AI ai;
-    private Evaluation evaluation;
 
-    public Engine(Tabuleiro tabuleiro, CasaBotao[][] boardInterface) {
-        this.tabuleiro = tabuleiro;
-        this.TAM = tabuleiro.getTam();
-        this.turnManagement = new TurnManagement();
-        this.translator = new Translator(TAM);
-        this.moveManagement = new MoveManagement(tabuleiro, translator);
-        this.paintTabuleiro = new PaintTabuleiro(tabuleiro,boardInterface, translator);
-        this.evaluation = new PositionalEvaluation(translator);
-        this.ai = new AI(tabuleiro, evaluation);
+    public Engine(Tabuleiro tabuleiro, CasaBotao[][] boardInterface, LevelAI level) {
+        this(tabuleiro, boardInterface, level, null);
     }
-    
+
+
+    public Engine(Tabuleiro tabuleiro, CasaBotao[][] boardInterface,
+                  LevelAI level, TrainingConfig config) {
+        this.level              = level;
+        this.tabuleiro          = tabuleiro;
+        this.TAM                = tabuleiro.getTam();
+        this.turnManagement     = new TurnManagement();
+        this.translator         = new Translator(TAM);
+        this.moveManagement     = new MoveManagement(tabuleiro, translator);
+        this.paintTabuleiro     = new PaintTabuleiro(tabuleiro, boardInterface, translator, level);
+
+        if (config != null) {
+            this.playerIsWhite  = config.playerIsWhite;
+            this.ai             = new AI(tabuleiro, translator, config);
+        } else {
+            this.playerIsWhite  = true;   // jogador é branca por default
+            this.ai             = new AI(tabuleiro, translator, level);
+        }
+
+        this.iaIsWhite = !playerIsWhite;
+    }
+
+
+    public void iniciar() {
+        if (!playerIsWhite) {
+            SwingUtilities.invokeLater(() -> {
+                ai.montarArvore(iaIsWhite);
+                executarJogadaIA();
+            });
+        }
+    }
+
     public void setGameOverListener(GameOverListener listener) {
         this.gameOverListener = listener;
     }
 
+
     public void handleClick(int i, int j) {
-        if (tabuleiro.isOver()) {
-            gameOver = true;
-            if (gameOverListener != null) {
-                gameOverListener.onGameOver(tabuleiro.getWhiteCount() > 0);
-            }
-        }
-        else if (tabuleiro.getWhiteCount() == 1 && !popupShown) {
-            ganharPecaGratis();
-            popupShown = true;
-        }
 
-        // Verificação se o jogador tem pelo menos um movimento
-        if (!verificarSeTemJogadas()) {
-            gameOver = true;
-            gameOverListener.onGameOver(false);
-            return;
-        }
-
-        if (gameOver)
-            return;
+        if (gameOver) return;
 
         isWhiteTurn = turnManagement.whoseTurn();
+
+        if (isWhiteTurn != playerIsWhite) return;
 
         Position clicked = new Position(i, j);
 
         if (origin.getRow() == -1) {
+            // Selecionar peça
             if (tabuleiro.isEmpty(clicked) || isWhiteTurn != tabuleiro.isWhite(clicked)) return;
 
-            List<Node> possibleMoves = moveManagement.getMoves(translator.getCharFromPosition(clicked));
-
+            List<Node> possibleMoves = moveManagement.getMoves(
+                    translator.getCharFromPosition(clicked));
 
             if (moveManagement.teamHasCaptures(isWhiteTurn)) {
                 if (possibleMoves.isEmpty() || !moveManagement.hasCaptures(possibleMoves)) return;
             }
 
             movimentos = possibleMoves;
-            origin = clicked;
+            origin     = clicked;
             destacarMovimentos(movimentos);
-        }
-        else {
+
+        } else {
+            // Mover peça já selecionada
             if (isDoubleClick(clicked)) {
                 cancelarDestaque(movimentos);
-                origin.setPosition(-1,-1);
+                origin.setPosition(-1, -1);
                 return;
             }
 
             Node move = new Node(
                     translator.getCharFromPosition(origin),
-                    translator.getCharFromPosition(clicked)
-            );
+                    translator.getCharFromPosition(clicked));
 
             if (isValidMove(move)) {
                 cancelarDestaque(movimentos);
                 boolean wasCapture = moveManagement.isCapture(move);
 
-//                if (wasCapture) {
-//                   tabuleiro.capture(isWhiteTurn);
-//                }
-                
                 moveManagement.execMove(move, isWhiteTurn);
                 sincronizarView();
+                checkGameOver();
+                if (gameOver) return;
 
-                // Verifica dupla captura impedindo de mudar de turno
-                if (wasCapture && verificarSePodeCapturar(clicked)) {
-                    return;
-                }
+                // Dupla captura: mantém o turno do jogador
+                if (wasCapture && verificarSePodeCapturar(clicked)) return;
 
-                // Mudança de turno
-                origin.setPosition(-1,-1);
+                origin.setPosition(-1, -1);
                 turnManagement.changeTurn();
-                
-                // Após jogada do jogador, IA joga
+
+                // IA joga na sequência
                 SwingUtilities.invokeLater(() -> {
-                    ai.montarArvore(false);     //  Joga pelas pretas
-                    executarMelhorJogada();
+                    ai.montarArvore(iaIsWhite);
+                    executarJogadaIA();
                 });
+            }
+        }
+        checkGameOver();
+    }
+
+
+    /**
+     * Executa a melhor jogada ou uma aleatória (se não tiver heurística).
+     */
+    private void executarJogadaIA() {
+        Node move = ai.usesMinimax() ? ai.getBestMove() : null;
+        if (move == null) move = ai.getRandomMove(iaIsWhite);   // fallback / modo aleatório
+
+        if (move == null) {
+            // IA sem jogadas → jogador vence
+            gameOver = true;
+            if (gameOverListener != null) gameOverListener.onGameOver(playerIsWhite);
+            return;
+        }
+
+        boolean wasCapture = moveManagement.isCapture(move);
+        moveManagement.execMove(move, iaIsWhite);
+        sincronizarView();
+        checkGameOver();
+        if (gameOver) return;
+
+        if (wasCapture && moveManagement.verifyDoubleCapture(move.getDest())) {
+            // Dupla captura da IA: pausa visual sem bloquear a EDT
+            Node captured = move;
+            Timer delay = new Timer(300, _ -> {
+                ai.montarArvore(iaIsWhite);
+                executarJogadaIA();
+            });
+            delay.setRepeats(false);
+            delay.start();
+        } else {
+            turnManagement.changeTurn();
+        }
+    }
+
+    private void checkGameOver() {
+        if (gameOver) return;
+
+        // 1. Algum lado ficou sem peças
+        if (tabuleiro.isOver()) {
+            gameOver = true;
+            if (gameOverListener != null) {
+                gameOverListener.onGameOver(tabuleiro.getWhiteCount() > 0);
+            }
+            return;
+        }
+
+        // 2. Empate: exatamente uma dama branca + uma dama preta, sem capturas possíveis
+        if (isDrawCondition()) {
+            gameOver = true;
+            if (gameOverListener != null) gameOverListener.onDraw();
+            return;
+        }
+
+        // 3. Jogador atual sem jogadas → perde
+        boolean currentTurn = turnManagement.whoseTurn();
+        if (!temJogadas(currentTurn)) {
+            gameOver = true;
+            if (gameOverListener != null) {
+                gameOverListener.onGameOver(!currentTurn); // outro lado vence
             }
         }
     }
 
-    private boolean verificarSePodeCapturar(Position clicked) {
-        List<Node> allMoves = moveManagement.getAllMovesForPiece(translator.getCharFromPosition(clicked));
-        List<Node> captureMoves = new java.util.ArrayList<>();
-        
-        for (Node move : allMoves) {
-            if (moveManagement.isCapture(move)) {
-                captureMoves.add(move);
+    /**
+     * Detecta condição de empate: somente uma dama de cada cor restante
+     * e nenhum dos lados pode realizar captura.
+     */
+    private boolean isDrawCondition() {
+        if (tabuleiro.getWhiteCount() != 1 || tabuleiro.getBlackCount() != 1) return false;
+
+        boolean whiteKing = false, blackKing = false;
+        for (int i = 0; i < TAM; i++) {
+            for (int j = 0; j < TAM; j++) {
+                Position pos = new Position(i, j);
+                if (tabuleiro.isEmpty(pos)) continue;
+                if (tabuleiro.isWhite(pos) && tabuleiro.isDama(pos)) whiteKing = true;
+                if (!tabuleiro.isWhite(pos) && tabuleiro.isDama(pos)) blackKing = true;
             }
+        }
+        if (!whiteKing || !blackKing) return false;
+
+        return !moveManagement.teamHasCaptures(true)
+                && !moveManagement.teamHasCaptures(false);
+    }
+
+    /**
+     * Verifica se a cor indicada possui pelo menos uma jogada válida.
+     */
+    private boolean temJogadas(boolean isWhite) {
+        for (int i = 0; i < TAM; i++) {
+            for (int j = 0; j < TAM; j++) {
+                Position pos = new Position(i, j);
+                if (!tabuleiro.isEmpty(pos) && tabuleiro.isWhite(pos) == isWhite) {
+                    List<Node> moves = moveManagement.getMoves(
+                            translator.getCharFromPosition(pos));
+                    if (!moves.isEmpty()) return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean verificarSePodeCapturar(Position clicked) {
+        List<Node> allMoves = moveManagement.getAllMovesForPiece(
+                translator.getCharFromPosition(clicked));
+        List<Node> captureMoves = new ArrayList<>();
+
+        for (Node m : allMoves) {
+            if (moveManagement.isCapture(m)) captureMoves.add(m);
         }
 
         if (!captureMoves.isEmpty()) {
-            origin = clicked;
+            origin    = clicked;
             movimentos = captureMoves;
             destacarMovimentos(movimentos);
             return true;
@@ -155,113 +266,20 @@ public class Engine {
         return false;
     }
 
-    private boolean isValidMove(Node move) {
-       return movimentos.contains(move);
-    }
 
+    private boolean isValidMove(Node move)   { return movimentos.contains(move); }
+    private boolean isDoubleClick(Position p){ return !tabuleiro.isEmpty(p) && p.equals(origin); }
 
-    private void destacarMovimentos(List<Node> movimentos) {
-        paintTabuleiro.showPossibleMoves(origin, movimentos);
-    }
+    private void destacarMovimentos(List<Node> mov)   { paintTabuleiro.showPossibleMoves(origin, mov); }
+    private void cancelarDestaque(List<Node> mov)     { paintTabuleiro.unShowPossibleMoves(origin, mov); }
 
-    private void cancelarDestaque(List<Node> movimentos) {
-        paintTabuleiro.unShowPossibleMoves(origin, movimentos);
-    }
+    public void paint(int i, int j) { paintTabuleiro.colorirCasa(i, j); }
 
-    private boolean isDoubleClick(Position clicked) {
-        if (tabuleiro.isEmpty(clicked)) return false;
-       return clicked.equals(origin);
-    }
-
-
-    public void paint(int i, int j) {
-        paintTabuleiro.colorirCasa(i,j);
-    }
-
-    // SINCRONIZAR INTERFACE COM A MATRIZ
     public void sincronizarView() {
         for (int i = 0; i < TAM; i++) {
             for (int j = 0; j < TAM; j++) {
-                char piece = tabuleiro.getType(i, j);
-                paintTabuleiro.atualizarCasa(i, j, piece);
+                paintTabuleiro.atualizarCasa(i, j, tabuleiro.getType(i, j));
             }
         }
-    }
-
-    // Debug
-    private void print(List<Node> l) {
-        for (Node node : l) {
-            System.out.println(node.getOrigin() + " " + node.getDest());
-        }
-    }
-
-    // Isso não entra no projeto de entrega
-    private void ganharPecaGratis() {
-        PopUp popup = new PopUp();
-
-        if (popup.getClicked() == 1) {
-            boolean added = false;
-                for (int col = 0; col < TAM && !added; col++) {
-                    if ((5 + col) % 2 != 0 && tabuleiro.isEmpty(new Position(5, col))) {
-                        tabuleiro.setPos(new Position(5, col), Tabuleiro.WHITEPIECE);
-                        tabuleiro.incrementWhite();
-                        added = true;
-                    }
-                }
-
-            sincronizarView();
-        }
-
-    }
-
-
-    private void executarMelhorJogada() {
-        Node bestMove = ai.getBestMove();
-        if (bestMove != null) {
-            SwingUtilities.invokeLater(() -> {
-                boolean wasCapture = moveManagement.isCapture(bestMove);
-                moveManagement.execMove(bestMove, false);
-                sincronizarView();
-                
-                if (wasCapture && moveManagement.verifyDoubleCapture(bestMove.getDest())) {
-                    try {
-                        Thread.sleep(300);  // Tempo para ver as capturas múltiplas
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
-                    ai.montarArvore(false);
-                    executarMelhorJogada();
-                } else {
-                    turnManagement.changeTurn();
-                }
-            });
-        }
-        // Sem jogadas, a IA perde!
-        else {
-            gameOver = true;
-            if (gameOverListener != null) {
-                gameOverListener.onGameOver(true);
-            }
-        }
-    }
-
-
-    private boolean verificarSeTemJogadas() {
-        ArrayList<Node> jogadasPossiveis = new ArrayList<>();
-
-        for (int i = 0; i < tabuleiro.getTam(); i++) {
-            for (int j = 0; j < tabuleiro.getTam(); j++) {
-
-                if (!tabuleiro.isEmpty(new Position(i, j)) && tabuleiro.isWhite(new Position(i, j)))  {
-                    jogadasPossiveis.addAll(moveManagement.getMoves(
-                            translator.getCharFromPosition(new Position(i, j))
-                    ));
-
-                    if (!jogadasPossiveis.isEmpty()) return true;
-                }
-            }
-        }
-
-        return false;
     }
 }

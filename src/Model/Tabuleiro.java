@@ -1,14 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Model;
 
-/**
- *
- * @author Douglas
- */
 public class Tabuleiro implements Cloneable {
 
     private char[][] matriz;
@@ -16,11 +7,11 @@ public class Tabuleiro implements Cloneable {
     private short white = 6;
     private short black = 6;
 
-    public static final char EMPTY = '0';
+    public static final char EMPTY      = '0';
     public static final char WHITEPIECE = '1';
     public static final char BLACKPIECE = '2';
-    public static final char WHITEKING = '3';
-    public static final char BLACKKING = '4';
+    public static final char WHITEKING  = '3';
+    public static final char BLACKKING  = '4';
 
     public Tabuleiro() {
         this.matriz = new char[TAMANHO][TAMANHO];
@@ -31,32 +22,17 @@ public class Tabuleiro implements Cloneable {
         for (int i = 0; i < TAMANHO; i++) {
             for (int j = 0; j < TAMANHO; j++) {
                 if ((i + j) % 2 != 0) {
-                    if (i < 2) {
-                        matriz[i][j] = BLACKPIECE; // Pretas
-                    } else if (i > 3) {
-                        matriz[i][j] = WHITEPIECE; // Brancas vazias para teste
-                    }
-                    else {
-                        matriz[i][j] = EMPTY;
-                    }
-                }
-                else {
+                    if      (i < 2) matriz[i][j] = BLACKPIECE;
+                    else if (i > 3) matriz[i][j] = WHITEPIECE;
+                    else            matriz[i][j] = EMPTY;
+                } else {
                     matriz[i][j] = EMPTY;
                 }
             }
         }
     }
 
-    private void print(char[][] arena) {
-        for (int i = 0; i < TAMANHO; i++) {
-            for (int j = 0; j < TAMANHO; j++) {
-                System.out.print(matriz[i][j]);
-            }
-            System.out.println();
-        }
-    }
-
-    /*======================= GETTERS AND SETTERS =======================*/
+    /*======================= CLONE =======================*/
 
     @Override
     public Tabuleiro clone() {
@@ -74,34 +50,34 @@ public class Tabuleiro implements Cloneable {
         }
     }
 
+    /*======================= CONSULTAS =======================*/
+
     public boolean isDama(Position pos) {
-       char type = matriz[pos.getRow()][pos.getCol()];
-       return type == WHITEKING || type == BLACKKING;
+        char type = matriz[pos.getRow()][pos.getCol()];
+        return type == WHITEKING || type == BLACKKING;
     }
 
     public boolean isDiagonal(Position from, Position to) {
-        return ((from.getRow() + from.getCol()) == (to.getRow() + to.getCol()) || (from.getRow() - from.getCol()) == (to.getRow() - to.getCol()));
+        return (from.getRow() + from.getCol()) == (to.getRow() + to.getCol())
+                || (from.getRow() - from.getCol()) == (to.getRow() - to.getCol());
     }
 
-
-    /*======================= FUNÇÃO PARA TESTAR SE A CASA É VAZIA =======================*/
     public boolean isEmpty(Position pos) {
         if (isInvalidParam(pos)) return false;
         return matriz[pos.getRow()][pos.getCol()] == EMPTY;
     }
 
-    /*======================= FUNÇÃO DE UTILIDADE PARA EVITAR PARÂMETROS FORA DO LIMITE =======================*/
     public boolean isInvalidParam(Position pos) {
-        return pos.getRow() < 0 || pos.getRow() > 5 || pos.getCol() < 0 || pos.getCol() > 5;
+        return pos.getRow() < 0 || pos.getRow() > 5
+                || pos.getCol() < 0 || pos.getCol() > 5;
     }
 
     public boolean isInvalidParam(int r, int c) {
         return r < 0 || r > 5 || c < 0 || c > 5;
     }
 
-    /*======================= PEGAR O TIPO DA PEÇA EM UMA COORDENADA =======================*/
     public char getType(Position pos) {
-        if (isInvalidParam(pos)) return '#';  // Tipo não reconhecido
+        if (isInvalidParam(pos)) return '#';
         return matriz[pos.getRow()][pos.getCol()];
     }
 
@@ -110,69 +86,54 @@ public class Tabuleiro implements Cloneable {
         return matriz[r][c];
     }
 
-    public int getTam() {
-        return TAMANHO;
-    }
-
-    /*======================= VERIFICA SE É INIMIGO =======================*/
-    /// Verifica se a peça na coordenada (r1, c1) é inimiga da peça na coordenada (r2, c2)
     public boolean isEnemy(Position piece, Position otherPiece) {
         if (isInvalidParam(otherPiece)) return false;
-        char type1 = matriz[piece.getRow()][piece.getCol()];
-        char type2 = matriz[otherPiece.getRow()][otherPiece.getCol()];
-
-        if (type2 == type1)
-            return false;
-
-        if ("13".contains(String.valueOf(type1)) && "13".contains(String.valueOf(type2)))
-            return false;
-
-        return !"24".contains(String.valueOf(type1)) || !"24".contains(String.valueOf(type2));
-    }
-
-    public char[][] getMatriz() {
-        return matriz;
-    }
-
-    public void setMatriz(char[][] matriz) {
-        this.matriz = matriz;
-    }
-    
-    public void setPos(Position pos, char type) {
-        matriz[pos.getRow()][pos.getCol()] = type;
-    }
-    
-    public char getPos(Position pos) {
-        return matriz[pos.getRow()][pos.getCol()];
+        char t1 = matriz[piece.getRow()][piece.getCol()];
+        char t2 = matriz[otherPiece.getRow()][otherPiece.getCol()];
+        if (t2 == t1) return false;
+        if ("13".indexOf(t1) >= 0 && "13".indexOf(t2) >= 0) return false;
+        return !("24".indexOf(t1) >= 0 && "24".indexOf(t2) >= 0);
     }
 
     public boolean isWhite(Position pos) {
         if (isInvalidParam(pos)) return false;
-        return "13".contains(String.valueOf(matriz[pos.getRow()][pos.getCol()]));
+        return "13".indexOf(matriz[pos.getRow()][pos.getCol()]) >= 0;
     }
+
+    /*======================= MUTAÇÕES =======================*/
 
     public void capture(boolean isWhiteTurn) {
-        if (isWhiteTurn && black > 0)
-            black--;
-        else if (!isWhiteTurn && white > 0)
-            white--;
+        if (isWhiteTurn  && black > 0) black--;
+        else if (!isWhiteTurn && white > 0) white--;
     }
 
+    public void setPos(Position pos, char type) {
+        matriz[pos.getRow()][pos.getCol()] = type;
+    }
+
+    public char getPos(Position pos) {
+        return matriz[pos.getRow()][pos.getCol()];
+    }
+
+    /*======================= GETTERS / SETTERS =======================*/
+
+    public int     getTam()          { return TAMANHO; }
+    public char[][] getMatriz()      { return matriz; }
+    public void    setMatriz(char[][] m) { this.matriz = m; }
+    public int     getWhiteCount()   { return white; }
+    public int     getBlackCount()   { return black; }   // ADICIONADO para detecção de empate
+
+    public void incrementWhite() { white++; }
+
+    /*======================= FIM DE JOGO =======================*/
+
+    /** Retorna true se algum dos lados ficou sem peças. */
     public boolean isOver() {
         return black == 0 || white == 0;
     }
 
-    public int getWhiteCount() {
-        return white;
-    }
+    /*======================= CARGA DE CONFIGURAÇÃO =======================*/
 
-    public void incrementWhite() {
-        white++;
-    }
-
-
-
-    // NA CLASSE Tabuleiro.java
     public void carregarConfiguracao(char[][] novaMatriz) {
         this.white = 0;
         this.black = 0;
@@ -180,7 +141,7 @@ public class Tabuleiro implements Cloneable {
             for (int j = 0; j < TAMANHO; j++) {
                 this.matriz[i][j] = novaMatriz[i][j];
                 char c = novaMatriz[i][j];
-                if (c == WHITEPIECE || c == WHITEKING) white++;
+                if      (c == WHITEPIECE || c == WHITEKING) white++;
                 else if (c == BLACKPIECE || c == BLACKKING) black++;
             }
         }
