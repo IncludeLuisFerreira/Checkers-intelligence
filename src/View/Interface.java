@@ -11,18 +11,18 @@ import java.io.IOException;
 
 public final class Interface extends JFrame {
 
-    private final int LENGTH = 6;
-    private CasaBotao[][] boardInterface;
-    private Engine engine;
-    private final LevelAI level;// ← novo: guardado para repassar ao GameOverView
+    private static final int LENGTH = 6;
 
-    Runnable onRestart;
+    private final CasaBotao[][] boardInterface;
+    private final Engine        engine;
+    private final LevelAI       level;
+    private final Runnable      onRestart;
 
-    public Interface(CasaBotao[][] botoes, Engine engine, LevelAI level, Runnable onRestart) {  // ← level entra aqui
+    public Interface(CasaBotao[][] botoes, Engine engine, LevelAI level, Runnable onRestart) {
         this.boardInterface = botoes;
-        this.engine = engine;
-        this.level  = level;
-        this.onRestart = onRestart;
+        this.engine         = engine;
+        this.level          = level;
+        this.onRestart      = onRestart;
 
         setInterface();
         montarLayout(boardInterface);
@@ -34,7 +34,6 @@ public final class Interface extends JFrame {
         setSize(800, 800);
         setLayout(new GridLayout(LENGTH, LENGTH));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         try {
             setIconImage(ImageIO.read(new File("img/icone_desktop.png")));
         } catch (IOException e) {
@@ -42,31 +41,29 @@ public final class Interface extends JFrame {
         }
     }
 
-    private void montarLayout(CasaBotao[][] boardInterface) {
+    private void montarLayout(CasaBotao[][] botoes) {
         setLayout(new GridLayout(LENGTH, LENGTH));
         for (int i = 0; i < LENGTH; i++) {
             for (int j = 0; j < LENGTH; j++) {
                 engine.paint(i, j);
-
-                final int row = i;
-                final int col = j;
-                add(boardInterface[i][j]);
-                if (((i+j) & 1) == 1) {
-                    boardInterface[i][j].addActionListener(_ -> engine.handleClick(row, col));
+                final int row = i, col = j;
+                add(botoes[i][j]);
+                if (((i + j) & 1) == 1) {
+                    botoes[i][j].addActionListener(_ -> engine.handleClick(row, col));
                 }
             }
         }
     }
 
-    public void declararVencedor(boolean isWhite) {
-        GameOverView tela = new GameOverView(
-                isWhite,
-                level,
-                () -> {                          // callback "Jogar Novamente"
-                    dispose();                   // fecha a janela atual
-                   onRestart.run();
-                }
-        );
-        tela.exibir();
+    // ── Callbacks de fim de jogo ─────────────────────────────────────────────
+
+    /** Chamado pelo GameOverListener quando um lado vence. */
+    public void declararVencedor(boolean whiteWon) {
+        new GameOverView(whiteWon, level, () -> { dispose(); onRestart.run(); }).exibir();
+    }
+
+    /** Chamado pelo GameOverListener quando ocorre empate (duas damas). */
+    public void declararEmpate() {
+        new GameOverView(null, level, () -> { dispose(); onRestart.run(); }).exibir();
     }
 }
