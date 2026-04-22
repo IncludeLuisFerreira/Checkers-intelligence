@@ -39,13 +39,13 @@ public class PopUp {
         Random aleatorio = new Random();
         switch (choice) {
             case 0 : {
-                System.out.println("Escolha 0");
+                //System.out.println("Escolha 0");
                 playVideo(videos[aleatorio.nextInt(videos.length)]);
                 clicked = 1;
                 break;
             }
             case 1 : {
-                System.out.println("Escolha 1");
+                //System.out.println("Escolha 1");
                 clicked = 0;
             }
         }

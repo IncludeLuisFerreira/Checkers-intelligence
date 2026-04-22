@@ -26,7 +26,7 @@ public class Engine {
 
     /**
      * true  = jogador usa peças brancas (padrão).
-     * false = jogador usa peças pretas → IA inicia como brancas.
+     * false = jogador usa peças pretas. IA inicia como brancas.
      */
     private final boolean playerIsWhite;
 
@@ -41,41 +41,34 @@ public class Engine {
 
     private GameOverListener gameOverListener;
 
-    // ── Construtor padrão (níveis fixos) ────────────────────────────────────
 
     public Engine(Tabuleiro tabuleiro, CasaBotao[][] boardInterface, LevelAI level) {
         this(tabuleiro, boardInterface, level, null);
     }
 
-    // ── Construtor com suporte a TrainingConfig ──────────────────────────────
 
     public Engine(Tabuleiro tabuleiro, CasaBotao[][] boardInterface,
                   LevelAI level, TrainingConfig config) {
-        this.level          = level;
-        this.tabuleiro      = tabuleiro;
-        this.TAM            = tabuleiro.getTam();
-        this.turnManagement = new TurnManagement();
-        this.translator     = new Translator(TAM);
-        this.moveManagement = new MoveManagement(tabuleiro, translator);
-        this.paintTabuleiro = new PaintTabuleiro(tabuleiro, boardInterface, translator, level);
+        this.level              = level;
+        this.tabuleiro          = tabuleiro;
+        this.TAM                = tabuleiro.getTam();
+        this.turnManagement     = new TurnManagement();
+        this.translator         = new Translator(TAM);
+        this.moveManagement     = new MoveManagement(tabuleiro, translator);
+        this.paintTabuleiro     = new PaintTabuleiro(tabuleiro, boardInterface, translator, level);
 
         if (config != null) {
-            this.playerIsWhite = config.playerIsWhite;
-            this.ai            = new AI(tabuleiro, translator, config);
+            this.playerIsWhite  = config.playerIsWhite;
+            this.ai             = new AI(tabuleiro, translator, config);
         } else {
-            this.playerIsWhite = true;   // padrão: jogador = brancas
-            this.ai            = new AI(tabuleiro, translator, level);
+            this.playerIsWhite  = true;   // jogador é branca por default
+            this.ai             = new AI(tabuleiro, translator, level);
         }
 
         this.iaIsWhite = !playerIsWhite;
     }
 
-    // ── Inicialização pós-construção ─────────────────────────────────────────
 
-    /**
-     * Deve ser chamado após {@link #setGameOverListener}.
-     * Se o jogador escolheu pretas, a IA (brancas) executa a primeira jogada.
-     */
     public void iniciar() {
         if (!playerIsWhite) {
             SwingUtilities.invokeLater(() -> {
@@ -89,15 +82,13 @@ public class Engine {
         this.gameOverListener = listener;
     }
 
-    // ── Entrada do jogador ───────────────────────────────────────────────────
 
     public void handleClick(int i, int j) {
-        checkGameOver();
+
         if (gameOver) return;
 
         isWhiteTurn = turnManagement.whoseTurn();
 
-        // BUG CORRIGIDO: bloqueia cliques durante a vez da IA
         if (isWhiteTurn != playerIsWhite) return;
 
         Position clicked = new Position(i, j);
@@ -151,16 +142,12 @@ public class Engine {
                 });
             }
         }
+        checkGameOver();
     }
 
-    // ── Execução da IA ───────────────────────────────────────────────────────
 
     /**
-     * Executa a melhor jogada ou uma aleatória (quando sem avaliador).
-     * Usa Timer em vez de Thread.sleep para não bloquear a EDT.
-     *
-     * BUG CORRIGIDO (NPE): versão anterior não retornava ao obter null.
-     * BUG CORRIGIDO (EDT): Thread.sleep substituído por javax.swing.Timer.
+     * Executa a melhor jogada ou uma aleatória (se não tiver heurística).
      */
     private void executarJogadaIA() {
         Node move = ai.usesMinimax() ? ai.getBestMove() : null;
@@ -192,8 +179,6 @@ public class Engine {
             turnManagement.changeTurn();
         }
     }
-
-    // ── Verificação de fim de jogo ───────────────────────────────────────────
 
     private void checkGameOver() {
         if (gameOver) return;
@@ -248,9 +233,6 @@ public class Engine {
 
     /**
      * Verifica se a cor indicada possui pelo menos uma jogada válida.
-     *
-     * BUG CORRIGIDO: versão original verificava apenas as brancas (hardcoded).
-     * Agora o parâmetro determina qual lado é verificado.
      */
     private boolean temJogadas(boolean isWhite) {
         for (int i = 0; i < TAM; i++) {
@@ -265,8 +247,6 @@ public class Engine {
         }
         return false;
     }
-
-    // ── Dupla captura do jogador ──────────────────────────────────────────────
 
     private boolean verificarSePodeCapturar(Position clicked) {
         List<Node> allMoves = moveManagement.getAllMovesForPiece(
@@ -286,7 +266,6 @@ public class Engine {
         return false;
     }
 
-    // ── Auxiliares de UI ─────────────────────────────────────────────────────
 
     private boolean isValidMove(Node move)   { return movimentos.contains(move); }
     private boolean isDoubleClick(Position p){ return !tabuleiro.isEmpty(p) && p.equals(origin); }
